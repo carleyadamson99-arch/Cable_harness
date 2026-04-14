@@ -31,6 +31,7 @@ def map_attributes(awg: str) -> dict:
     if awg not in ATTRIBUTE_MAP:
         raise ValueError(f"No attribute mapping found for AWG: {awg}")
 
+    # This replaces manual lookup of standard wire attributes and part numbers.
     return ATTRIBUTE_MAP[awg].copy()
 
 
@@ -60,6 +61,8 @@ def process_signals(signals: list[dict]) -> list[dict]:
     processed = []
 
     for signal in signals:
+        # For each signal, the tool automates the usual engineer workflow:
+        # read the required current, choose the AWG, then pull the mapped part data.
         current = signal["current"]
         awg = get_awg(current)
         attributes = map_attributes(awg)
@@ -88,6 +91,8 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
 
     wire_list = []
     for signal in processed_signals:
+        # This turns repeated table lookups into a consistent wire-list row
+        # that can be used directly for downstream BOM generation.
         wire_list.append(
             {
                 "signal_name": signal["signal_name"],

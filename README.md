@@ -1,25 +1,71 @@
 # Cable_harness
-Automate wire sizing and part selection for point-to-point power cables using current rating inputs.
-User inputs:
 
-signal name
+Cable Harness is a Python-based prototype tool for point-to-point cable design. The goal is to reduce repetitive manual work involved in selecting wire sizes and part numbers from static reference tables.
 
-current rating
+The tool takes simple electrical inputs and converts them into a structured wire list and bill of materials (BOM). The project is being developed incrementally, starting with a focused MVP and expanding toward a more complete harness design workflow.
 
-cable length (optional)
+## Problem
 
-Tool does:
+Designing standard power cables often requires engineers to repeatedly:
+- look up wire gauge from current
+- assign standard wire attributes
+- select part numbers
+- prepare a wire list and BOM
 
-AWG lookup (based on current)
+These steps are rule-based and repetitive, which makes them a good target for automation.
 
-assigns color (lookup)
+## Current MVP Scope
 
-pulls part number (wire + sleeve)
+Current inputs:
+- signal name
+- current rating
+- cable or harness length
 
-Tool outputs:
+Current tool behavior:
+- AWG lookup based on current
+- color lookup
+- wire part number lookup
+- wire list generation
+- wire BOM generation
+- simple voltage-drop flag for longer runs
 
-wire list (table)
+Current outputs:
+- wire list
+- basic wire BOM
+- simple design flag output
 
-basic BOM
+## Development Phases
 
-optional: simple wiring diagram (even schematic-level)
+### Phase 1: Core Wire Selection MVP
+- input signal name, current, and harness length
+- AWG lookup
+- color and wire part number mapping
+- structured wire list
+- wire BOM
+- simple voltage-drop flag
+
+### Phase 2: User Interface And Usable Workflow
+- replace hardcoded sample inputs with a simple user input form
+- make the tool easier to run and demo
+- display wire list and BOM clearly
+- add exportable outputs if feasible
+- optionally add a basic connection summary or simple diagram view
+
+### Phase 3: Better Engineering Rules
+- temperature derating flag
+- improved wire sizing logic
+- optional length multiplier logic
+- stronger validation and error handling
+
+### Phase 4: Harness Packaging Features
+- bundle diameter calculation
+- sleeve selection
+- sleeve BOM
+- more refined material calculations
+
+## Project Structure
+
+- [main.py](/abs/c:/Users/carby/OneDrive/FINAL_PROJECT/Cable_harness/main.py): orchestrates the prototype workflow
+- [modules/awg.py](/abs/c:/Users/carby/OneDrive/FINAL_PROJECT/Cable_harness/modules/awg.py): AWG lookup logic
+- [modules/mapper.py](/abs/c:/Users/carby/OneDrive/FINAL_PROJECT/Cable_harness/modules/mapper.py): mapping and wire-list generation logic
+- [modules/output.py](/abs/c:/Users/carby/OneDrive/FINAL_PROJECT/Cable_harness/modules/output.py): BOM generation and display formatting

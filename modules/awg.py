@@ -9,6 +9,7 @@ def get_awg(current: float) -> str:
     if current <= 0:
         raise ValueError("Current must be greater than zero.")
 
+    # This replaces the manual step of checking a current-vs-AWG reference chart.
     if current <= 5:
         return "22 AWG"
     if current <= 10:
