@@ -58,10 +58,11 @@ The current prototype supports:
 - optionally include a basic connection summary or diagram
 
 ### Phase 3: Better Engineering Rules
-- temperature derating flag
 - improved wire sizing logic
-- optional length multiplier logic
+- length-aware logic for stronger voltage-drop guidance
+- optional AWG recommendation bump for longer runs
 - stronger validation and error handling
+- more meaningful engineering notes in the outputs
 
 ### Phase 4: Harness Packaging Features
 - bundle diameter calculation
@@ -79,6 +80,7 @@ The current prototype supports:
 - remove sleeve calculations for now
 - prioritize a text-based visual representation over graphics
 - move UI/demo improvements earlier in the phase plan
+- remove temperature derating from the Phase 3 plan
 
 ## How To Run
 
@@ -99,5 +101,5 @@ Streamlit version:
 - improve Streamlit layout and polish
 - add CSV download buttons in Streamlit
 - add stronger validation for empty signal names
-- update README with Streamlit run instructions
+- make wire selection more length-aware
 - consider simple deployment or local-network sharing for demo purposes

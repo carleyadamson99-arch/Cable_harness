@@ -8,12 +8,14 @@ from modules.mapper import (
     map_attributes,
     process_signals,
 )
+from modules.packaging import get_packaging_data
 from modules.output import (
     export_bom_csv,
     export_wire_list_csv,
     format_bom_data,
     format_connection_diagram,
     format_connection_summary,
+    format_packaging_data,
     format_wire_list,
     generate_bom,
 )
@@ -53,15 +55,35 @@ def get_positive_float(prompt: str) -> float:
         return value
 
 
+def get_signal_name(prompt: str, existing_names: set[str]) -> str:
+    """Prompt the user until a unique, non-empty signal name is entered."""
+    while True:
+        signal_name = input(prompt).strip()
+
+        if not signal_name:
+            print("Signal name cannot be blank.")
+            continue
+
+        if signal_name in existing_names:
+            print("Signal name must be unique.")
+            continue
+
+        return signal_name
+
+
 def get_user_inputs() -> tuple[list[dict], float]:
     """Collect signal inputs and cable length from the user."""
     signals = []
+    signal_names = set()
     conductor_count = get_positive_int("Enter number of conductors: ")
 
     for index in range(1, conductor_count + 1):
-        signal_name = input(f"Enter signal name for conductor {index}: ").strip()
+        signal_name = get_signal_name(
+            f"Enter signal name for conductor {index}: ", signal_names
+        )
         current = get_positive_float(f"Enter current for {signal_name} (A): ")
         signals.append({"signal_name": signal_name, "current": current})
+        signal_names.add(signal_name)
 
     length = get_positive_float("Enter cable length: ")
     return signals, length
@@ -97,7 +119,8 @@ def main() -> None:
         map_attributes(signal["awg"])
 
     wire_list = generate_wire_list(signals, length)
-    bom = generate_bom(wire_list)
+    packaging_data = get_packaging_data(wire_list)
+    bom = generate_bom(wire_list, packaging_data)
     voltage_flag = check_voltage_flag(length)
 
     print()
@@ -115,6 +138,9 @@ def main() -> None:
     print()
     print("CONNECTION DIAGRAM")
     print(format_connection_diagram(wire_list))
+    print()
+    print("PACKAGING SUMMARY")
+    print(format_packaging_data(packaging_data))
     print()
     print("FLAGS")
     if voltage_flag:

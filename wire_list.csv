@@ -1,3 +1,4 @@
-signal_name,awg,color,wire_pn,length
-DC_PWR,18 AWG,red,WIRE-18-RED-001,10.0
-PUMP_FEED,20 AWG,blue,WIRE-20-BLU-001,10.0
+signal_name,awg,color,wire_pn,length,note
+DC_PWR,18 AWG,red,WIRE-18-RED-001,12.0,
+PUMP_FEED,20 AWG,blue,WIRE-20-BLU-001,12.0,
+SENSOR_PWR,22 AWG,white,WIRE-22-WHT-001,12.0,

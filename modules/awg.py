@@ -1,5 +1,7 @@
 """AWG lookup logic for the cable harness prototype."""
 
+AWG_ORDER = ["22 AWG", "20 AWG", "18 AWG", "16 AWG", "14 AWG"]
+
 
 def get_awg(current: float) -> str:
     """Return a wire gauge based on the requested current."""
@@ -20,6 +22,37 @@ def get_awg(current: float) -> str:
         return "16 AWG"
 
     return "14 AWG"
+
+
+def bump_awg_size(awg: str) -> str:
+    """Return the next larger wire size when available."""
+    if awg not in AWG_ORDER:
+        raise ValueError(f"Unknown AWG value: {awg}")
+
+    index = AWG_ORDER.index(awg)
+    if index == len(AWG_ORDER) - 1:
+        return awg
+
+    return AWG_ORDER[index + 1]
+
+
+def get_design_awg(current: float, length: float) -> tuple[str, str]:
+    """Return an AWG recommendation adjusted for longer cable runs."""
+    if not isinstance(length, (int, float)):
+        raise TypeError("Length must be a number.")
+
+    if length <= 0:
+        raise ValueError("Length must be greater than zero.")
+
+    base_awg = get_awg(current)
+
+    # For longer runs, recommend one larger wire size to reduce voltage drop risk.
+    if length > 15:
+        adjusted_awg = bump_awg_size(base_awg)
+        if adjusted_awg != base_awg:
+            return adjusted_awg, "AWG increased for longer cable run"
+
+    return base_awg, ""
 
 
 def select_awg(current: float) -> str:

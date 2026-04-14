@@ -37,6 +37,8 @@ Current outputs:
 ## Development Phases
 
 ### Phase 1: Core Wire Selection MVP
+Status: Complete for prototype
+
 - input signal name, current, and harness length
 - AWG lookup
 - color and wire part number mapping
@@ -45,6 +47,8 @@ Current outputs:
 - simple voltage-drop flag
 
 ### Phase 2: User Interface And Usable Workflow
+Status: Complete for prototype
+
 - replace hardcoded sample inputs with a simple user input form
 - make the tool easier to run and demo
 - display wire list and BOM clearly
@@ -52,16 +56,42 @@ Current outputs:
 - optionally add a basic connection summary or simple diagram view
 
 ### Phase 3: Better Engineering Rules
-- temperature derating flag
+Status: Mostly complete for prototype
+
 - improved wire sizing logic
-- optional length multiplier logic
+- length-aware logic for stronger voltage-drop guidance
+- optional AWG recommendation bump for longer runs
 - stronger validation and error handling
+- more meaningful engineering notes in the outputs
 
 ### Phase 4: Harness Packaging Features
+Status: Partially complete with core packaging prototype
+
 - bundle diameter calculation
 - sleeve selection
 - sleeve BOM
 - more refined material calculations
+
+## Implementation Status
+
+Current prototype coverage by phase:
+- Phase 1 is complete at the MVP level
+- Phase 2 is complete at the prototype/demo level
+- Phase 3 is mostly complete, with room for more advanced engineering rules
+- Phase 4 is partially complete, with bundle sizing and sleeve recommendation implemented
+
+Current implemented features include:
+- terminal-based workflow
+- Streamlit web app
+- CSV export
+- AWG lookup and part-number mapping
+- length-aware wire sizing
+- voltage-drop guidance
+- validation for blank and duplicate signal names
+- connection summary and text-based connection diagram
+- bundle diameter calculation
+- sleeve recommendation
+- sleeve BOM line item
 
 ## Project Structure
 

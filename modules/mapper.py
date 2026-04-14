@@ -1,6 +1,6 @@
 """Mapping logic for converting electrical inputs into wire selections."""
 
-from modules.awg import get_awg
+from modules.awg import get_awg, get_design_awg
 
 ATTRIBUTE_MAP = {
     "22 AWG": {
@@ -87,19 +87,21 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
     if length <= 0:
         raise ValueError("Length must be greater than zero.")
 
-    processed_signals = process_signals(signals)
-
     wire_list = []
-    for signal in processed_signals:
+    for signal in signals:
+        design_awg, note = get_design_awg(signal["current"], length)
+        attributes = map_attributes(design_awg)
+
         # This turns repeated table lookups into a consistent wire-list row
         # that can be used directly for downstream BOM generation.
         wire_list.append(
             {
                 "signal_name": signal["signal_name"],
-                "awg": signal["awg"],
-                "color": signal["color"],
-                "wire_pn": signal["wire_pn"],
+                "awg": design_awg,
+                "color": attributes["color"],
+                "wire_pn": attributes["wire_pn"],
                 "length": length,
+                "note": note,
             }
         )
 
@@ -108,6 +110,8 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
 
 def check_voltage_flag(length: float) -> str:
     """Return a simple voltage drop warning for longer cable runs."""
+    if length > 15:
+        return "Voltage drop check strongly recommended for this cable length"
     if length > 10:
         return "Voltage drop check recommended"
 
