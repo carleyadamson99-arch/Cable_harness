@@ -6,7 +6,7 @@ from modules.mapper import (
     map_attributes,
     process_signals,
 )
-from modules.output import format_bom, format_wire_list, generate_bom
+from modules.output import format_bom_data, format_wire_list, generate_bom
 
 
 def get_sample_inputs() -> tuple[list[dict], float]:
@@ -20,7 +20,7 @@ def get_sample_inputs() -> tuple[list[dict], float]:
     return signals, length
 
 
-def main():
+def main() -> None:
     """Run the full prototype pipeline with sample data."""
     signals, length = get_sample_inputs()
 
@@ -41,7 +41,7 @@ def main():
     print(format_wire_list(wire_list))
     print()
     print("BOM")
-    print(format_bom(wire_list))
+    print(format_bom_data(bom))
     print()
     print("FLAGS")
     if voltage_flag:

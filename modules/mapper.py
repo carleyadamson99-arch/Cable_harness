@@ -6,27 +6,22 @@ ATTRIBUTE_MAP = {
     "22 AWG": {
         "color": "white",
         "wire_pn": "WIRE-22-WHT-001",
-        "sleeve_pn": "SLV-22-STD",
     },
     "20 AWG": {
         "color": "blue",
         "wire_pn": "WIRE-20-BLU-001",
-        "sleeve_pn": "SLV-20-STD",
     },
     "18 AWG": {
         "color": "red",
         "wire_pn": "WIRE-18-RED-001",
-        "sleeve_pn": "SLV-18-STD",
     },
     "16 AWG": {
         "color": "yellow",
         "wire_pn": "WIRE-16-YEL-001",
-        "sleeve_pn": "SLV-16-STD",
     },
     "14 AWG": {
         "color": "green",
         "wire_pn": "WIRE-14-GRN-001",
-        "sleeve_pn": "SLV-14-STD",
     },
 }
 
@@ -39,7 +34,7 @@ def map_attributes(awg: str) -> dict:
     return ATTRIBUTE_MAP[awg].copy()
 
 
-def map_wire(requirement):
+def map_wire(requirement: dict) -> dict:
     """Convert one input requirement into a structured wire record."""
     signal_name = requirement["signal_name"]
     current = requirement["current"]
@@ -52,11 +47,10 @@ def map_wire(requirement):
         "awg": awg,
         "color": attributes["color"],
         "wire_part_number": attributes["wire_pn"],
-        "sleeve_part_number": attributes["sleeve_pn"],
     }
 
 
-def build_wire_list(requirements):
+def build_wire_list(requirements: list[dict]) -> list[dict]:
     """Convert a list of user inputs into a wire list."""
     return [map_wire(requirement) for requirement in requirements]
 
@@ -76,7 +70,6 @@ def process_signals(signals: list[dict]) -> list[dict]:
                 "awg": awg,
                 "color": attributes["color"],
                 "wire_pn": attributes["wire_pn"],
-                "sleeve_pn": attributes["sleeve_pn"],
             }
         )
 
@@ -101,7 +94,6 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
                 "awg": signal["awg"],
                 "color": signal["color"],
                 "wire_pn": signal["wire_pn"],
-                "sleeve_pn": signal["sleeve_pn"],
                 "length": length,
             }
         )
