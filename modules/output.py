@@ -10,10 +10,12 @@ def generate_bom(wire_list: list[dict], packaging_data: dict | None = None) -> d
     sleeve_counts = Counter()
 
     for wire in wire_list:
-        wire_counts[wire["wire_pn"]] += 1
+        wire_counts[wire["wire_pn"]] += float(wire["length"])
 
     if packaging_data:
-        sleeve_counts[packaging_data["recommended_sleeve_pn"]] += 1
+        sleeve_counts[packaging_data["recommended_sleeve_pn"]] += float(
+            packaging_data["sleeve_length_ft"]
+        )
 
     return {
         "wire": dict(wire_counts),

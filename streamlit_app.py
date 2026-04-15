@@ -1,26 +1,25 @@
 """Streamlit interface for the cable harness prototype."""
 
+from html import escape
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
 from modules.mapper import check_voltage_flag, generate_wire_list, get_available_colors
-from modules.packaging import get_packaging_data, get_wire_diameter
-from modules.output import (
-    format_connection_diagram,
-    format_connection_summary,
-    format_packaging_data,
-    generate_bom,
-)
+from modules.packaging import get_packaging_data, get_wire_spec
+from modules.output import generate_bom
 
 COLOR_HEX = {
+    "black": "#2f3443",
     "red": "#ff5f6d",
     "blue": "#45a7ff",
     "white": "#d8e1f0",
     "yellow": "#f6bf4f",
     "green": "#38c793",
 }
-
 AUTO_COLOR_LABEL = "Auto (Recommended)"
+LOGO_PATH = Path(__file__).resolve().parent / "CA_LOGO.png"
 
 
 def inject_styles() -> None:
@@ -30,74 +29,44 @@ def inject_styles() -> None:
         <style>
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 30%),
-                radial-gradient(circle at top right, rgba(16,185,129,0.14), transparent 28%),
-                linear-gradient(180deg, #0b1220 0%, #0f172a 60%, #111827 100%);
-            color: #e5edf7;
+                radial-gradient(circle at top left, rgba(108, 76, 224, 0.16), transparent 24%),
+                radial-gradient(circle at top right, rgba(53, 138, 255, 0.12), transparent 22%),
+                linear-gradient(180deg, #0f1017 0%, #14151f 55%, #161726 100%);
+            color: #e4e8f1;
         }
         .block-container {
-            padding-top: 2rem;
-            padding-bottom: 3rem;
-            max-width: 1220px;
+            max-width: 1380px;
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
         }
         h1, h2, h3 {
-            color: #f8fbff;
-            letter-spacing: 0.02em;
-        }
-        .hero {
-            padding: 1.4rem 1.6rem;
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            border-radius: 22px;
-            background: linear-gradient(180deg, rgba(17,24,39,0.92), rgba(15,23,42,0.85));
-            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
-            margin-bottom: 1.2rem;
-        }
-        .hero-eyebrow {
-            font-size: 0.78rem;
-            color: #8fa6c2;
-            text-transform: uppercase;
-            letter-spacing: 0.28em;
-            margin-bottom: 0.55rem;
-        }
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #f8fbff;
-            margin-bottom: 0.35rem;
-        }
-        .hero-subtitle {
-            color: #a9b8cc;
-            font-size: 1rem;
-            line-height: 1.6;
-            max-width: 52rem;
-        }
-        .panel {
-            padding: 1.1rem 1.15rem;
-            border: 1px solid rgba(148, 163, 184, 0.14);
-            border-radius: 20px;
-            background: rgba(15, 23, 42, 0.72);
-            box-shadow: 0 18px 46px rgba(0,0,0,0.18);
+            color: #f5f7fb;
         }
         .section-label {
-            color: #8fa6c2;
+            color: #9aa4bd;
             text-transform: uppercase;
             letter-spacing: 0.22em;
-            font-size: 0.74rem;
-            margin-bottom: 0.65rem;
+            font-size: 0.72rem;
+            margin-bottom: 0.7rem;
+        }
+        .copy-block {
+            color: #b3bdd3;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
         }
         .metric-card {
-            padding: 0.95rem 1rem;
-            border-radius: 18px;
-            background: linear-gradient(180deg, rgba(30,41,59,0.95), rgba(15,23,42,0.92));
-            border: 1px solid rgba(148, 163, 184, 0.14);
-            min-height: 96px;
+            padding: 0.9rem 1rem;
+            min-height: 108px;
+            border: 1px solid rgba(120, 126, 148, 0.35);
+            background: linear-gradient(180deg, rgba(28, 30, 44, 0.96), rgba(21, 23, 34, 0.96));
         }
         .metric-label {
-            color: #8fa6c2;
-            font-size: 0.76rem;
+            color: #9aa4bd;
             text-transform: uppercase;
-            letter-spacing: 0.18em;
-            margin-bottom: 0.6rem;
+            letter-spacing: 0.16em;
+            font-size: 0.69rem;
+            margin-bottom: 0.5rem;
         }
         .metric-value {
             color: #f8fbff;
@@ -106,60 +75,74 @@ def inject_styles() -> None:
             margin-bottom: 0.25rem;
         }
         .metric-note {
-            color: #9eb0c8;
-            font-size: 0.92rem;
-        }
-        [data-testid="stDataFrame"], [data-testid="stTable"] {
-            border-radius: 18px;
-            overflow: hidden;
-            border: 1px solid rgba(148, 163, 184, 0.14);
+            color: #afb8ca;
+            font-size: 0.88rem;
+            line-height: 1.4;
         }
         [data-testid="stForm"] {
-            border: 1px solid rgba(148, 163, 184, 0.14);
-            border-radius: 20px;
-            background: rgba(15, 23, 42, 0.74);
-            padding: 1rem 1rem 0.5rem 1rem;
-        }
-        div[data-baseweb="input"] input, div[data-baseweb="select"] input {
-            background-color: rgba(15, 23, 42, 0.9) !important;
-            color: #f8fbff !important;
-        }
-        .stButton button {
-            background: linear-gradient(90deg, #1d4ed8, #0f9b8e);
-            color: white;
             border: none;
-            border-radius: 999px;
-            padding: 0.7rem 1.2rem;
-            font-weight: 700;
+            background: transparent;
+            padding: 0;
+        }
+        [data-testid="stForm"] input {
+            background: rgba(24, 26, 36, 0.95) !important;
+            color: #f3f7fd !important;
+            border: 1px solid rgba(94, 98, 119, 0.45) !important;
+            border-radius: 10px !important;
+        }
+        [data-testid="stForm"] label p {
+            color: #a6b0c8 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.70rem !important;
+        }
+        .stButton button, .stFormSubmitButton button {
+            background: linear-gradient(180deg, #cf6b73, #8c3142) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 158, 167, 0.3) !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            padding: 0.82rem 1.3rem !important;
+            box-shadow: 0 12px 32px rgba(161, 58, 77, 0.28);
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(113,120,141,0), rgba(113,120,141,0.4), rgba(113,120,141,0));
+            margin: 1.2rem 0;
+        }
+        .wire-card {
+            border: 1px solid rgba(103, 110, 131, 0.22);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(25, 27, 39, 0.98), rgba(19, 21, 31, 0.98));
+            overflow: hidden;
+        }
+        .wire-card-header {
+            border-bottom: 1px solid rgba(103, 110, 131, 0.22);
+            padding: 0.9rem 1.1rem;
+            color: #9aa4bd;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.72rem;
+        }
+        .wire-card-body {
+            padding: 0.8rem 1.1rem 1rem 1.1rem;
         }
         .text-panel {
             padding: 0.95rem 1rem;
-            border-radius: 16px;
-            background: rgba(15, 23, 42, 0.62);
-            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 14px;
+            background: rgba(18, 20, 31, 0.88);
+            border: 1px solid rgba(103, 110, 131, 0.2);
             white-space: pre-wrap;
             font-family: Consolas, "Courier New", monospace;
-            line-height: 1.65;
-            color: #dce7f5;
+            line-height: 1.7;
+            color: #dce3ef;
+        }
+        [data-testid="stDataFrame"], [data-testid="stTable"] {
+            border: 1px solid rgba(103, 110, 131, 0.2);
+            border-radius: 14px;
+            overflow: hidden;
         }
         </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def render_hero() -> None:
-    """Render the app header block."""
-    st.markdown(
-        """
-        <div class="hero">
-            <div class="hero-eyebrow">Cable Harness Design Tool</div>
-            <div class="hero-title">Point-to-Point Harness Layout</div>
-            <div class="hero-subtitle">
-                Translate electrical requirements into a clean wire list, BOM, packaging
-                recommendation, and connection view with a streamlined engineering workflow.
-            </div>
-        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -172,13 +155,22 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
         color.title() for color in get_available_colors()
     ]
 
+    header_cols = st.columns([1.45, 0.8, 0.95], gap="small")
+    with header_cols[0]:
+        st.markdown('<div class="section-label">Signal Name</div>', unsafe_allow_html=True)
+    with header_cols[1]:
+        st.markdown('<div class="section-label">Current (A)</div>', unsafe_allow_html=True)
+    with header_cols[2]:
+        st.markdown('<div class="section-label">Color</div>', unsafe_allow_html=True)
+
     for index in range(1, conductor_count + 1):
-        left, middle, right = st.columns([1.35, 0.9, 1.05])
+        left, middle, right = st.columns([1.45, 0.8, 0.95], gap="small")
         with left:
             signal_name = st.text_input(
                 f"Signal name {index}",
                 key=f"signal_name_{index}",
-                value=f"SIGNAL_{index}",
+                value=f"SIGNAL {index}",
+                label_visibility="collapsed",
             )
         with middle:
             current = st.number_input(
@@ -187,6 +179,7 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
                 step=0.5,
                 key=f"current_{index}",
                 value=1.0,
+                label_visibility="collapsed",
             )
         with right:
             color_choice = st.selectbox(
@@ -194,6 +187,7 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
                 options=selectable_colors,
                 key=f"color_{index}",
                 index=0,
+                label_visibility="collapsed",
             )
 
         selected_color = ""
@@ -209,25 +203,6 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
         )
 
     return signals
-
-
-def format_bom_rows(bom: dict) -> list[dict]:
-    """Convert BOM data into table rows for display."""
-    rows = [
-        {"Part Number": part_number, "Quantity": quantity, "Category": "Wire"}
-        for part_number, quantity in sorted(bom["wire"].items())
-    ]
-
-    rows.extend(
-        {
-            "Part Number": part_number,
-            "Quantity": quantity,
-            "Category": "Sleeve",
-        }
-        for part_number, quantity in sorted(bom.get("sleeve", {}).items())
-    )
-
-    return rows
 
 
 def validate_signals(signals: list[dict]) -> str:
@@ -246,25 +221,6 @@ def validate_signals(signals: list[dict]) -> str:
     return ""
 
 
-def to_wire_dataframe(wire_list: list[dict]) -> pd.DataFrame:
-    """Return a display-friendly wire list table."""
-    rows = []
-    for wire in wire_list:
-        rows.append(
-            {
-                "Signal": wire["signal_name"],
-                "AWG": wire["awg"],
-                "Color": wire["color"].title(),
-                "Part Number": wire["wire_pn"],
-                "Length (ft)": f"{wire['length']:.1f}",
-                "OD (in)": f"{get_wire_diameter(wire['awg']):.3f}",
-                "Note": wire.get("note", ""),
-            }
-        )
-
-    return pd.DataFrame(rows)
-
-
 def metric_card(label: str, value: str, note: str) -> None:
     """Render a compact metric card."""
     st.markdown(
@@ -279,111 +235,221 @@ def metric_card(label: str, value: str, note: str) -> None:
     )
 
 
-def render_harness_visual(wire_list: list[dict], packaging_data: dict, length: float) -> None:
-    """Render a simple cable-side visual using inline SVG."""
+def to_wire_dataframe(wire_list: list[dict]) -> pd.DataFrame:
+    """Return a display-friendly wire details table."""
+    rows = []
+
+    for index, wire in enumerate(wire_list, start=1):
+        spec = get_wire_spec(wire["awg"])
+        current = float(wire["current"])
+        resistance = spec["resistance_ohm_per_kft"] * wire["length"] / 1000
+        voltage_drop = current * resistance
+        voltage_drop_pct = (voltage_drop / 12.0) * 100
+        status = "OK" if current <= spec["ampacity_a"] and voltage_drop_pct < 3 else "CHECK"
+
+        rows.append(
+            {
+                "FN": index,
+                "Color": wire["color"].title(),
+                "Wire Label": wire["signal_name"],
+                "Gauge": wire["awg"],
+                "OD": f"{spec['od_in']:.3f} in",
+                "Current / Ampacity": f"{current:.1f} A / {spec['ampacity_a']:.1f} A",
+                "Resistance": f"{resistance:.4f} ohm",
+                "Voltage Drop": f"{voltage_drop:.3f}V / {voltage_drop_pct:.2f}%",
+                "Status": status,
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
+def to_bom_dataframe(bom: dict) -> pd.DataFrame:
+    """Return a display-friendly BOM table."""
+    rows = []
+    fn = 1
+
+    for part_number, quantity in sorted(bom["wire"].items()):
+        rows.append(
+            {
+                "FN": fn,
+                "Description": "Hook-up wire",
+                "P/N": part_number,
+                "QTY": f"{quantity:.1f}",
+            }
+        )
+        fn += 1
+
+    for part_number, quantity in sorted(bom.get("sleeve", {}).items()):
+        rows.append(
+            {
+                "FN": fn,
+                "Description": "Shrink sleeve",
+                "P/N": part_number,
+                "QTY": f"{quantity:.1f}",
+            }
+        )
+        fn += 1
+
+    return pd.DataFrame(rows)
+
+
+def render_harness_visual(
+    wire_list: list[dict], packaging_data: dict, length: float
+) -> None:
+    """Render a sleek harness-side visual using inline SVG."""
+    conductor_count = len(wire_list)
+    label_font_size = 13 if conductor_count <= 6 else 11
+    line_step = 18 if conductor_count <= 6 else 16
+    top_margin = 76
+    harness_start_x = 238
+    harness_end_x = 676
+    center_y = top_margin + ((conductor_count - 1) * line_step / 2)
+    start_y = top_margin
+    sleeve_height = max(38, (conductor_count - 1) * line_step + 28)
+    sleeve_y = center_y - (sleeve_height / 2)
+    label_left_x = 172
+    awg_right_x = 710
+    body_height = max(248, 184 + conductor_count * 22)
+    footer_y = body_height - 54
+    footer_value_y = body_height - 34
+
     stripe_lines = []
-    label_lines = []
-    center_y = 92
-    step = 8
-    start_y = center_y - ((len(wire_list) - 1) * step / 2)
+    left_labels = []
+    right_labels = []
 
     for index, wire in enumerate(wire_list):
-        y = start_y + index * step
+        y = start_y + index * line_step
         color = COLOR_HEX.get(wire["color"].lower(), "#d8e1f0")
+        signal_name = escape(wire["signal_name"])
+        awg = escape(wire["awg"])
         stripe_lines.append(
-            f'<line x1="70" y1="{y}" x2="770" y2="{y}" '
-            f'stroke="{color}" stroke-width="3" stroke-linecap="round" />'
+            f'<line x1="{harness_start_x}" y1="{y}" x2="{harness_end_x}" y2="{y}" '
+            f'stroke="{color}" stroke-width="4" stroke-linecap="round" />'
         )
-        label_lines.append(
-            f'<text x="84" y="{168 + index * 18}" fill="{color}" font-size="12" '
-            f'font-family="monospace">{wire["signal_name"]} / {wire["awg"]}</text>'
+        left_labels.append(
+            f'<circle cx="{label_left_x - 16}" cy="{y}" r="5.5" fill="{color}" />'
+            f'<text x="{label_left_x}" y="{y + 4}" text-anchor="end" fill="#eef3fb" '
+            f'font-size="{label_font_size}" font-family="monospace">{signal_name}</text>'
+        )
+        right_labels.append(
+            f'<text x="{awg_right_x}" y="{y + 4}" fill="#eef3fb" '
+            f'font-size="{label_font_size}" font-family="monospace">{awg}</text>'
         )
 
     bundle = packaging_data["bundle_diameter_in"]
-    sleeve = packaging_data["recommended_sleeve_pn"]
+    sleeve = escape(packaging_data["recommended_sleeve_pn"])
     svg = f"""
-    <svg viewBox="0 0 840 220" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 900 {body_height}" width="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="cableShell" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#334155"/>
-          <stop offset="50%" stop-color="#475569"/>
-          <stop offset="100%" stop-color="#334155"/>
+        <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#232735"/>
+          <stop offset="20%" stop-color="#4e536a"/>
+          <stop offset="50%" stop-color="#747a90"/>
+          <stop offset="80%" stop-color="#4e536a"/>
+          <stop offset="100%" stop-color="#232735"/>
+        </linearGradient>
+        <linearGradient id="sleeveGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1f2230"/>
+          <stop offset="50%" stop-color="#32384b"/>
+          <stop offset="100%" stop-color="#1f2230"/>
         </linearGradient>
       </defs>
-      <rect x="16" y="16" width="808" height="188" rx="20" fill="#151c27" stroke="#283245" />
-      <text x="36" y="40" fill="#90a4bf" font-size="12" letter-spacing="3" font-family="monospace">
-        HARNESS SIDE VIEW
+      <rect x="18" y="16" width="864" height="{body_height - 32}" rx="18" fill="#181b25" stroke="#2f3443"/>
+      <text x="34" y="42" fill="#9aa4bd" font-size="12" letter-spacing="3" font-family="monospace">
+        HARNESS SIDE VIEW - WIRE ROUTING
       </text>
-      <rect x="60" y="76" width="720" height="32" rx="9" fill="url(#cableShell)" stroke="#7087a6" />
+      {''.join(left_labels)}
+      {''.join(right_labels)}
+      <rect x="{harness_start_x}" y="{sleeve_y}" width="{harness_end_x - harness_start_x}" height="{sleeve_height}" rx="18" fill="url(#sleeveGlow)" stroke="#59627a"/>
+      <rect x="{harness_start_x - 10}" y="{sleeve_y - 4}" width="18" height="{sleeve_height + 8}" rx="5" fill="url(#bodyGradient)" stroke="#5d6479"/>
+      <rect x="{harness_end_x - 8}" y="{sleeve_y - 4}" width="18" height="{sleeve_height + 8}" rx="5" fill="url(#bodyGradient)" stroke="#5d6479"/>
       {''.join(stripe_lines)}
-      <rect x="52" y="70" width="16" height="44" rx="3" fill="#263244" />
-      <rect x="774" y="70" width="16" height="44" rx="3" fill="#263244" />
-      <text x="36" y="96" fill="#9fb2ca" font-size="12" font-family="monospace">A</text>
-      <text x="806" y="96" fill="#9fb2ca" font-size="12" font-family="monospace">B</text>
-      <line x1="372" y1="122" x2="468" y2="122" stroke="#5f738f" stroke-width="1.5" />
-      <text x="390" y="138" fill="#8fa6c2" font-size="12" font-family="monospace">{length:.1f} ft</text>
-      <text x="36" y="168" fill="#8fa6c2" font-size="12" letter-spacing="2" font-family="monospace">
-        CONDUCTORS
+      <line x1="{harness_start_x}" y1="{footer_y}" x2="{harness_end_x + 10}" y2="{footer_y}" stroke="#d09b39" stroke-width="1.6" />
+      <line x1="{harness_start_x}" y1="{footer_y - 9}" x2="{harness_start_x}" y2="{footer_y + 9}" stroke="#d09b39" stroke-width="1.6" />
+      <line x1="{harness_end_x + 10}" y1="{footer_y - 9}" x2="{harness_end_x + 10}" y2="{footer_y + 9}" stroke="#d09b39" stroke-width="1.6" />
+      <text x="{(harness_start_x + harness_end_x + 10) / 2 - 18}" y="{footer_y - 6}" fill="#e0bd72" font-size="12" font-family="monospace">{length:.1f} ft</text>
+      <text x="34" y="{footer_y}" fill="#9aa4bd" font-size="12" letter-spacing="2" font-family="monospace">
+        SLEEVE
       </text>
-      {''.join(label_lines)}
-      <text x="560" y="168" fill="#8fa6c2" font-size="12" letter-spacing="2" font-family="monospace">
-        PACKAGING
+      <text x="104" y="{footer_y}" fill="#f2f6fb" font-size="13" font-family="monospace">{sleeve}</text>
+      <text x="34" y="{footer_value_y}" fill="#9aa4bd" font-size="12" letter-spacing="2" font-family="monospace">
+        BUNDLE OD
       </text>
-      <text x="560" y="186" fill="#dce7f5" font-size="12" font-family="monospace">
-        Bundle OD: {bundle:.3f} in
-      </text>
-      <text x="560" y="202" fill="#dce7f5" font-size="12" font-family="monospace">
-        Sleeve: {sleeve}
-      </text>
+      <text x="122" y="{footer_value_y}" fill="#f2f6fb" font-size="13" font-family="monospace">{bundle:.3f} in</text>
     </svg>
     """
-    st.markdown(f'<div class="panel">{svg}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="wire-card">
+            <div class="wire-card-header">Harness Routing View</div>
+            <div class="wire-card-body">{svg}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def main() -> None:
     """Render the Streamlit app and run the cable design pipeline."""
-    st.set_page_config(page_title="Cable Harness Tool", layout="wide")
+    st.set_page_config(page_title="Cable Automator", layout="wide")
     inject_styles()
-    render_hero()
 
-    left, right = st.columns([0.95, 1.45], gap="large")
+    left, right = st.columns([0.95, 1.25], gap="large")
 
     with left:
-        st.markdown('<div class="section-label">Design Inputs</div>', unsafe_allow_html=True)
-        with st.form("design_inputs"):
-            conductor_count = st.number_input(
-                "Number of conductors",
-                min_value=1,
-                step=1,
-                value=3,
-            )
-            signals = build_signal_inputs(int(conductor_count))
-            cable_length = st.number_input(
-                "Cable length (ft)",
-                min_value=0.1,
-                step=0.5,
-                value=12.0,
-            )
-            submitted = st.form_submit_button("Generate Cable Design", type="primary")
-
-    with right:
-        st.markdown('<div class="section-label">Visual Preview</div>', unsafe_allow_html=True)
+        if LOGO_PATH.exists():
+            st.image(str(LOGO_PATH), width=280)
         st.markdown(
-            """
-            <div class="panel" style="min-height: 240px;">
-                <div style="color:#8fa6c2; text-transform:uppercase; letter-spacing:0.2em; font-size:0.76rem; margin-bottom:0.8rem;">
-                    Awaiting Design Generation
-                </div>
-                <div style="color:#dce7f5; font-size:1rem; line-height:1.7;">
-                    Enter conductor data on the left, then generate the harness to see the cable
-                    routing view, wire tables, BOM, and packaging recommendation.
-                </div>
-            </div>
-            """,
+            '<div class="copy-block">Translate electrical requirements into a wiring diagram, a BOM, packaging recommendation, and wire-detail summary with a streamlined engineering workflow.</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-label">Cable Design Inputs</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="copy-block">Enter conductor data on the left, then generate the harness to see the wiring diagram view, wire table, BOM, and packaging recommendations.</div>',
             unsafe_allow_html=True,
         )
 
+        with st.form("design_inputs"):
+            top_left, top_right = st.columns(2, gap="medium")
+            with top_left:
+                conductor_count = st.number_input(
+                    "No. of Conductors",
+                    min_value=1,
+                    step=1,
+                    value=3,
+                )
+            with top_right:
+                cable_length = st.number_input(
+                    "Length (ft)",
+                    min_value=0.1,
+                    step=0.5,
+                    value=12.0,
+                )
+
+            st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+            signals = build_signal_inputs(int(conductor_count))
+            st.markdown("<div style='height: 1.2rem;'></div>", unsafe_allow_html=True)
+            submitted = st.form_submit_button("Generate Cable Design", type="primary")
+
+    with right:
+        st.markdown('<div class="section-label">Cable Design Outputs</div>', unsafe_allow_html=True)
+
     if not submitted:
+        with right:
+            st.markdown(
+                """
+                <div class="wire-card">
+                    <div class="wire-card-header">Output Dashboard</div>
+                    <div class="wire-card-body" style="color:#dbe3f0; line-height:1.8;">
+                        Generate a design to populate the dashboard summary, harness routing view,
+                        wire details, bill of materials, and packaging recommendation.
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         return
 
     validation_error = validate_signals(signals)
@@ -400,57 +466,35 @@ def main() -> None:
         st.error(str(error))
         return
 
-    st.markdown("---")
-    top_metrics = st.columns(4, gap="medium")
-    with top_metrics[0]:
-        metric_card("Conductors", str(len(wire_list)), "Total wires in harness")
-    with top_metrics[1]:
-        metric_card("Cable Length", f"{float(cable_length):.1f} ft", "Entered design length")
-    with top_metrics[2]:
-        metric_card(
-            "Bundle Diameter",
-            f"{packaging_data['bundle_diameter_in']:.3f} in",
-            "Estimated harness bundle size",
-        )
-    with top_metrics[3]:
-        metric_card(
-            "Recommended Sleeve",
-            packaging_data["recommended_sleeve_pn"],
-            "Selected from fit-range reference data",
-        )
+    with right:
+        summary_cols = st.columns(4, gap="small")
+        with summary_cols[0]:
+            metric_card("Conductors", str(len(wire_list)), "Total wires in harness")
+        with summary_cols[1]:
+            metric_card("Cable Length", f"{float(cable_length):.1f} ft", "Entered design length")
+        with summary_cols[2]:
+            metric_card(
+                "Bundle Diameter",
+                f"{packaging_data['bundle_diameter_in']:.3f} in",
+                "Estimated harness bundle size",
+            )
+        with summary_cols[3]:
+            metric_card(
+                "Recommended Sleeve",
+                packaging_data["recommended_sleeve_pn"],
+                "Selected from fit-range reference data",
+            )
 
-    st.markdown("")
-    render_harness_visual(wire_list, packaging_data, float(cable_length))
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        render_harness_visual(wire_list, packaging_data, float(cable_length))
 
-    results_left, results_right = st.columns([1.35, 1], gap="large")
-
-    with results_left:
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-label">Wire Details</div>', unsafe_allow_html=True)
-        st.dataframe(to_wire_dataframe(wire_list), width="stretch", hide_index=True)
+        st.dataframe(to_wire_dataframe(wire_list), use_container_width=True, hide_index=True)
 
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-label">Bill of Materials</div>', unsafe_allow_html=True)
-        st.dataframe(
-            pd.DataFrame(format_bom_rows(bom)),
-            width="stretch",
-            hide_index=True,
-        )
-
-    with results_right:
-        st.markdown('<div class="section-label">Engineering Notes</div>', unsafe_allow_html=True)
-        st.markdown(
-            f'<div class="text-panel">{format_packaging_data(packaging_data)}</div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown("")
-        st.markdown(
-            f'<div class="text-panel">{format_connection_summary(wire_list)}</div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown("")
-        st.markdown(
-            f'<div class="text-panel">{format_connection_diagram(wire_list)}</div>',
-            unsafe_allow_html=True,
-        )
+        st.dataframe(to_bom_dataframe(bom), use_container_width=True, hide_index=True)
 
         if voltage_flag:
             st.warning(voltage_flag)

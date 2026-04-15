@@ -26,6 +26,7 @@ ATTRIBUTE_MAP = {
 }
 
 COLOR_CODE_MAP = {
+    "black": "BLK",
     "white": "WHT",
     "blue": "BLU",
     "red": "RED",
@@ -127,6 +128,7 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
         wire_list.append(
             {
                 "signal_name": signal["signal_name"],
+                "current": signal["current"],
                 "awg": design_awg,
                 "color": attributes["color"],
                 "wire_pn": attributes["wire_pn"],

@@ -19,6 +19,23 @@ def load_wire_diameters() -> dict[str, float]:
     return data
 
 
+def load_wire_specs() -> dict[str, dict]:
+    """Return AWG-to-wire-spec data from the reference CSV."""
+    data = {}
+    filepath = REFERENCE_DIR / "wire_specs.csv"
+
+    with open(filepath, newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            data[row["awg"]] = {
+                "od_in": float(row["od_in"]),
+                "ampacity_a": float(row["ampacity_a"]),
+                "resistance_ohm_per_kft": float(row["resistance_ohm_per_kft"]),
+            }
+
+    return data
+
+
 def load_bundle_factors() -> dict[int, float]:
     """Return wire-count bundle factors from the reference CSV."""
     data = {}
@@ -56,6 +73,15 @@ def get_wire_diameter(awg: str) -> float:
         raise ValueError(f"No wire diameter found for AWG: {awg}")
 
     return wire_diameters[awg]
+
+
+def get_wire_spec(awg: str) -> dict:
+    """Return the reference spec data for an AWG value."""
+    wire_specs = load_wire_specs()
+    if awg not in wire_specs:
+        raise ValueError(f"No wire spec found for AWG: {awg}")
+
+    return wire_specs[awg]
 
 
 def get_bundle_factor(wire_count: int) -> float:
@@ -103,4 +129,5 @@ def get_packaging_data(wire_list: list[dict]) -> dict:
         "sleeve_min_diameter_in": sleeve["min_diameter_in"],
         "sleeve_max_diameter_in": sleeve["max_diameter_in"],
         "sleeve_wall_thickness_in": sleeve["wall_thickness_in"],
+        "sleeve_length_ft": float(wire_list[0]["length"]),
     }
