@@ -3,7 +3,7 @@
 import pandas as pd
 import streamlit as st
 
-from modules.mapper import check_voltage_flag, generate_wire_list
+from modules.mapper import check_voltage_flag, generate_wire_list, get_available_colors
 from modules.packaging import get_packaging_data, get_wire_diameter
 from modules.output import (
     format_connection_diagram,
@@ -19,6 +19,8 @@ COLOR_HEX = {
     "yellow": "#f6bf4f",
     "green": "#38c793",
 }
+
+AUTO_COLOR_LABEL = "Auto (Recommended)"
 
 
 def inject_styles() -> None:
@@ -166,16 +168,19 @@ def render_hero() -> None:
 def build_signal_inputs(conductor_count: int) -> list[dict]:
     """Collect signal inputs from the Streamlit form."""
     signals = []
+    selectable_colors = [AUTO_COLOR_LABEL] + [
+        color.title() for color in get_available_colors()
+    ]
 
     for index in range(1, conductor_count + 1):
-        left, right = st.columns([1.4, 1])
+        left, middle, right = st.columns([1.35, 0.9, 1.05])
         with left:
             signal_name = st.text_input(
                 f"Signal name {index}",
                 key=f"signal_name_{index}",
                 value=f"SIGNAL_{index}",
             )
-        with right:
+        with middle:
             current = st.number_input(
                 f"Current {index} (A)",
                 min_value=0.1,
@@ -183,7 +188,25 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
                 key=f"current_{index}",
                 value=1.0,
             )
-        signals.append({"signal_name": signal_name.strip(), "current": float(current)})
+        with right:
+            color_choice = st.selectbox(
+                f"Wire color {index}",
+                options=selectable_colors,
+                key=f"color_{index}",
+                index=0,
+            )
+
+        selected_color = ""
+        if color_choice != AUTO_COLOR_LABEL:
+            selected_color = color_choice.lower()
+
+        signals.append(
+            {
+                "signal_name": signal_name.strip(),
+                "current": float(current),
+                "color": selected_color,
+            }
+        )
 
     return signals
 
@@ -403,12 +426,12 @@ def main() -> None:
 
     with results_left:
         st.markdown('<div class="section-label">Wire Details</div>', unsafe_allow_html=True)
-        st.dataframe(to_wire_dataframe(wire_list), use_container_width=True, hide_index=True)
+        st.dataframe(to_wire_dataframe(wire_list), width="stretch", hide_index=True)
 
         st.markdown('<div class="section-label">Bill of Materials</div>', unsafe_allow_html=True)
         st.dataframe(
             pd.DataFrame(format_bom_rows(bom)),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 

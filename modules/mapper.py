@@ -25,14 +25,44 @@ ATTRIBUTE_MAP = {
     },
 }
 
+COLOR_CODE_MAP = {
+    "white": "WHT",
+    "blue": "BLU",
+    "red": "RED",
+    "yellow": "YEL",
+    "green": "GRN",
+}
 
-def map_attributes(awg: str) -> dict:
+
+def get_available_colors() -> list[str]:
+    """Return the supported user-selectable wire colors."""
+    return list(COLOR_CODE_MAP)
+
+
+def build_wire_part_number(awg: str, color: str) -> str:
+    """Return a part number based on AWG and selected color."""
+    if color not in COLOR_CODE_MAP:
+        raise ValueError(f"Unsupported wire color: {color}")
+
+    gauge = awg.split()[0]
+    return f"WIRE-{gauge}-{COLOR_CODE_MAP[color]}-001"
+
+
+def map_attributes(awg: str, color: str | None = None) -> dict:
     """Return mapped part attributes for a given AWG value."""
     if awg not in ATTRIBUTE_MAP:
         raise ValueError(f"No attribute mapping found for AWG: {awg}")
 
     # This replaces manual lookup of standard wire attributes and part numbers.
-    return ATTRIBUTE_MAP[awg].copy()
+    attributes = ATTRIBUTE_MAP[awg].copy()
+
+    if not color:
+        return attributes
+
+    normalized_color = color.strip().lower()
+    attributes["color"] = normalized_color
+    attributes["wire_pn"] = build_wire_part_number(awg, normalized_color)
+    return attributes
 
 
 def map_wire(requirement: dict) -> dict:
@@ -40,7 +70,7 @@ def map_wire(requirement: dict) -> dict:
     signal_name = requirement["signal_name"]
     current = requirement["current"]
     awg = get_awg(current)
-    attributes = map_attributes(awg)
+    attributes = map_attributes(awg, requirement.get("color"))
 
     return {
         "signal_name": signal_name,
@@ -65,7 +95,7 @@ def process_signals(signals: list[dict]) -> list[dict]:
         # read the required current, choose the AWG, then pull the mapped part data.
         current = signal["current"]
         awg = get_awg(current)
-        attributes = map_attributes(awg)
+        attributes = map_attributes(awg, signal.get("color"))
         processed.append(
             {
                 "signal_name": signal["signal_name"],
@@ -90,7 +120,7 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
     wire_list = []
     for signal in signals:
         design_awg, note = get_design_awg(signal["current"], length)
-        attributes = map_attributes(design_awg)
+        attributes = map_attributes(design_awg, signal.get("color"))
 
         # This turns repeated table lookups into a consistent wire-list row
         # that can be used directly for downstream BOM generation.
