@@ -8,7 +8,7 @@ import streamlit as st
 
 from modules.mapper import check_voltage_flag, generate_wire_list, get_available_colors
 from modules.packaging import get_packaging_data, get_wire_spec
-from modules.output import generate_bom
+from modules.output import build_bom_csv_text, build_wire_list_csv_text, generate_bom
 
 COLOR_HEX = {
     "black": "#2f3443",
@@ -30,6 +30,10 @@ def inject_styles() -> None:
         :root {
             --ui-font: "Avenir Next LT Pro", "Avenir Next", Avenir, "Segoe UI", sans-serif;
         }
+        html {
+            color-scheme: dark !important;
+            background: #0f1017 !important;
+        }
         .stApp {
             background:
                 radial-gradient(circle at top left, rgba(108, 76, 224, 0.16), transparent 24%),
@@ -45,6 +49,7 @@ def inject_styles() -> None:
         }
         html, body, [class*="css"], [data-testid="stAppViewContainer"], [data-testid="stMarkdownContainer"] {
             font-family: var(--ui-font) !important;
+            background-color: transparent !important;
         }
         h1, h2, h3 {
             color: #f5f7fb;
@@ -104,34 +109,85 @@ def inject_styles() -> None:
             margin-top: auto;
         }
         [data-testid="stForm"] {
-            border: none;
-            background: transparent;
-            padding: 0;
+            border: 1px solid rgba(103, 110, 131, 0.22);
+            background: linear-gradient(180deg, rgba(20, 22, 33, 0.92), rgba(15, 17, 27, 0.92));
+            border-radius: 18px;
+            padding: 1rem 1rem 1.15rem 1rem;
+            box-shadow: 0 14px 40px rgba(5, 7, 13, 0.16);
         }
         [data-testid="stForm"] > div {
-            gap: 0.35rem;
+            gap: 0.45rem;
+        }
+        [data-testid="stForm"] [data-testid="stVerticalBlock"] > div {
+            gap: 0.4rem;
         }
         [data-testid="stForm"] input {
-            background: rgba(24, 26, 36, 0.95) !important;
-            color: #f3f7fd !important;
-            border: 1px solid rgba(94, 98, 119, 0.45) !important;
+            background: rgba(16, 18, 28, 0.98) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(128, 138, 170, 0.6) !important;
             border-radius: 10px !important;
             min-height: 2.8rem;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+            padding-left: 0.8rem !important;
         }
         [data-baseweb="select"] > div {
-            background: rgba(24, 26, 36, 0.95) !important;
-            border: 1px solid rgba(94, 98, 119, 0.45) !important;
+            background: rgba(16, 18, 28, 0.98) !important;
+            border: 1px solid rgba(128, 138, 170, 0.6) !important;
             border-radius: 10px !important;
             min-height: 2.8rem;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+            padding-left: 0.15rem !important;
+        }
+        [data-baseweb="select"] * {
+            color: #f8fbff !important;
+            font-size: 0.98rem !important;
+            font-weight: 600 !important;
+        }
+        [role="listbox"], [data-baseweb="menu"] {
+            background: rgba(16, 18, 28, 0.98) !important;
+            border: 1px solid rgba(128, 138, 170, 0.35) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 18px 38px rgba(4, 7, 12, 0.44) !important;
+        }
+        [role="option"] {
+            color: #f4f7fc !important;
+            background: transparent !important;
+            font-weight: 600 !important;
+        }
+        [role="option"][aria-selected="true"],
+        [role="option"]:hover {
+            background: rgba(66, 92, 173, 0.28) !important;
+        }
+        [data-baseweb="base-input"] input::placeholder,
+        [data-testid="stForm"] input::placeholder {
+            color: #c7cfde !important;
+            opacity: 1 !important;
+        }
+        [data-testid="stForm"] input:focus,
+        [data-baseweb="select"] > div:focus-within {
+            border-color: rgba(161, 188, 255, 0.9) !important;
+            box-shadow: 0 0 0 1px rgba(161, 188, 255, 0.45), 0 0 18px rgba(74, 109, 214, 0.18) !important;
         }
         [data-testid="stForm"] label p {
-            color: #a6b0c8 !important;
+            color: #ccd4e5 !important;
             text-transform: uppercase;
             letter-spacing: 0.16em;
             font-size: 0.70rem !important;
         }
+        [data-testid="stNumberInput-stepUp"], [data-testid="stNumberInput-stepDown"],
+        [data-testid="stNumberInput-stepUp"] svg, [data-testid="stNumberInput-stepDown"] svg {
+            color: #f5f7fb !important;
+            fill: #f5f7fb !important;
+        }
         [data-testid="stNumberInput-stepUp"], [data-testid="stNumberInput-stepDown"] {
             border-radius: 8px !important;
+            background: rgba(29, 33, 48, 0.98) !important;
+            border-left: 1px solid rgba(128, 138, 170, 0.28) !important;
+        }
+        [data-testid="stNumberInput-stepUp"]:hover, [data-testid="stNumberInput-stepDown"]:hover {
+            background: rgba(53, 59, 83, 0.98) !important;
         }
         .stButton button, .stFormSubmitButton button {
             background: linear-gradient(180deg, #cf6b73, #8c3142) !important;
@@ -300,6 +356,7 @@ def to_wire_dataframe(wire_list: list[dict]) -> pd.DataFrame:
                 "Resistance": f"{resistance:.4f} ohm",
                 "Voltage Drop": f"{voltage_drop:.3f}V / {voltage_drop_pct:.2f}%",
                 "Status": status,
+                "Engineering Note": wire.get("note", ""),
             }
         )
 
@@ -342,6 +399,7 @@ def render_harness_visual(
     """Render a sleek harness-side visual using inline SVG."""
     conductor_count = len(wire_list)
     label_font_size = 13 if conductor_count <= 6 else 11
+    awg_font_size = 14 if conductor_count <= 6 else 12
     line_step = 18 if conductor_count <= 6 else 16
     top_margin = 76
     harness_start_x = 238
@@ -371,11 +429,13 @@ def render_harness_visual(
         )
         left_labels.append(
             f'<text x="{label_left_x}" y="{y + 4}" text-anchor="end" fill="#eef3fb" '
-            f'font-size="{label_font_size}" font-family="monospace">{signal_name}</text>'
+            f'font-size="{label_font_size}" font-family="monospace" font-weight="600" '
+            f'stroke="#0d1018" stroke-width="1.25" paint-order="stroke">{signal_name}</text>'
         )
         right_labels.append(
-            f'<text x="{awg_right_x}" y="{y + 4}" fill="#eef3fb" '
-            f'font-size="{label_font_size}" font-family="monospace">{awg}</text>'
+            f'<text x="{awg_right_x}" y="{y + 4}" fill="#ffffff" '
+            f'font-size="{awg_font_size}" font-family="monospace" font-weight="700" '
+            f'letter-spacing="0.4" stroke="#0d1018" stroke-width="1.5" paint-order="stroke">{awg}</text>'
         )
 
     bundle = packaging_data["bundle_diameter_in"]
@@ -536,6 +596,25 @@ def main() -> None:
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-label">Bill of Materials</div>', unsafe_allow_html=True)
         st.dataframe(to_bom_dataframe(bom), use_container_width=True, hide_index=True)
+
+        st.markdown("<div style='height: 0.6rem;'></div>", unsafe_allow_html=True)
+        export_cols = st.columns(2, gap="small")
+        with export_cols[0]:
+            st.download_button(
+                "Download Wire List CSV",
+                data=build_wire_list_csv_text(wire_list),
+                file_name="wire_list.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
+        with export_cols[1]:
+            st.download_button(
+                "Download BOM CSV",
+                data=build_bom_csv_text(bom),
+                file_name="bom.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
 
         if voltage_flag:
             st.warning(voltage_flag)

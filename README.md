@@ -36,10 +36,12 @@ Outputs currently supported:
 
 Current implemented logic includes:
 - AWG lookup using local reference ampacity values
+- expanded AWG coverage from 22 AWG through 2 AWG
 - validation for blank and duplicate signal names
 - rejection of unsupported current values outside the prototype data range
 - length-aware AWG bump for long cable runs
 - wire part-number mapping
+- per-wire engineering notes in the GUI and wire-list CSV export
 - bundle diameter calculation
 - sleeve selection from fit-range reference data
 - sleeve BOM quantity based on cable length
@@ -90,21 +92,24 @@ Completed:
 - formatted wire list and BOM display
 - harness routing visualization
 - CSV export
+- direct CSV download buttons in the GUI
+- polished dark-mode interface for demo use
 
 ### Phase 3: Better Engineering Rules
-Status: Mostly complete for prototype
+Status: Complete for current prototype scope
 
 Completed:
 - AWG selection tied to local ampacity reference values
+- expanded AWG reference coverage through 2 AWG
 - unsupported-current validation
 - length-aware AWG adjustment for longer cable runs
 - stronger signal input validation
 - voltage-drop guidance
+- per-wire engineering notes in the GUI and CSV output
 
-Remaining to fully close Phase 3:
-- add clearer engineering warning messages per wire row in the GUI and CSV output
-- support a broader AWG/current reference range so high-current cases do not stop at 14 AWG
+Future Phase 3 enhancements:
 - improve voltage-drop logic from a simple warning into a more explicit engineering calculation or threshold rule
+- expand the supported AWG/current range even further if the project grows beyond the current prototype envelope
 
 ### Phase 4: Harness Packaging Features
 Status: Core prototype complete, refinement still needed
@@ -115,43 +120,43 @@ Completed:
 - sleeve recommendation from min/max fit ranges
 - sleeve BOM line item
 - packaging summary in the tool
+- packaging data reflected in the BOM and CSV export flow
 
 Remaining to fully close Phase 4:
 - add sleeve length margin and tolerance rules instead of using only entered cable length
 - improve bundle sizing fidelity beyond average-diameter estimation
-- expose packaging calculations more clearly in export output
 - validate edge cases where no sleeve fit is available or where future packaging materials are added
 
 ## Best Next Improvements
 
 If the goal is to fully close the unfinished phases, the highest-value next steps are:
 
-1. Expand the AWG reference data
-- Add larger supported wire sizes and ampacity values so the tool can handle higher-current cases realistically.
-
-2. Strengthen engineering output visibility
-- Add per-wire notes or warnings directly into the GUI tables and CSV exports so users can see why a gauge changed or why a design needs review.
-
-3. Refine sleeve length logic
+1. Refine sleeve length logic
 - Use margin and tolerance rules from the original spreadsheet data so sleeve quantities are more realistic than raw cable length alone.
 
-4. Improve packaging robustness
+2. Improve packaging robustness
 - Handle no-fit sleeve cases more gracefully and make packaging outputs more explicit in exported deliverables.
+
+3. Improve bundle sizing fidelity
+- Replace the current average-diameter estimate with a more realistic bundle-sizing method if higher packaging accuracy is needed.
+
+4. Deepen electrical analysis
+- Upgrade voltage-drop guidance from a simple review note into a more explicit engineering calculation.
 
 ## Recommended Definition Of "Phase Complete"
 
 To mark the remaining phases as fully complete, I'd recommend using this standard:
 
-- Phase 3 is complete when the engineering rules are data-backed, transparent to the user, and robust across the supported current range.
+- Phase 3 is complete when the engineering rules are data-backed, transparent to the user, and robust across the supported prototype current range.
 - Phase 4 is complete when packaging outputs are not only recommended on-screen, but also calculated with realistic quantities and exported clearly.
 
 ## Suggested Next Build Order
 
 The cleanest order to finish the project is:
 
-1. Expand AWG reference coverage and update lookup logic accordingly.
-2. Add per-wire engineering notes to GUI tables and CSV outputs.
-3. Refine sleeve-length calculation using margin and tolerance rules.
-4. Add packaging edge-case handling and clearer packaging export details.
+1. Refine sleeve-length calculation using margin and tolerance rules.
+2. Add packaging edge-case handling for no-fit or unsupported cases.
+3. Improve bundle-diameter calculation fidelity.
+4. Upgrade voltage-drop guidance into a more explicit calculation.
 
 That path would let the README honestly say all four phases are complete for the intended prototype scope.

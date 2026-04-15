@@ -1,28 +1,20 @@
 """Mapping logic for converting electrical inputs into wire selections."""
 
 from modules.awg import get_awg, get_design_awg
+from modules.packaging import get_wire_spec
 
-ATTRIBUTE_MAP = {
-    "22 AWG": {
-        "color": "white",
-        "wire_pn": "WIRE-22-WHT-001",
-    },
-    "20 AWG": {
-        "color": "blue",
-        "wire_pn": "WIRE-20-BLU-001",
-    },
-    "18 AWG": {
-        "color": "red",
-        "wire_pn": "WIRE-18-RED-001",
-    },
-    "16 AWG": {
-        "color": "yellow",
-        "wire_pn": "WIRE-16-YEL-001",
-    },
-    "14 AWG": {
-        "color": "green",
-        "wire_pn": "WIRE-14-GRN-001",
-    },
+DEFAULT_AWG_COLOR_MAP = {
+    "22 AWG": "white",
+    "20 AWG": "blue",
+    "18 AWG": "red",
+    "16 AWG": "yellow",
+    "14 AWG": "green",
+    "12 AWG": "black",
+    "10 AWG": "white",
+    "8 AWG": "blue",
+    "6 AWG": "red",
+    "4 AWG": "yellow",
+    "2 AWG": "green",
 }
 
 COLOR_CODE_MAP = {
@@ -51,11 +43,15 @@ def build_wire_part_number(awg: str, color: str) -> str:
 
 def map_attributes(awg: str, color: str | None = None) -> dict:
     """Return mapped part attributes for a given AWG value."""
-    if awg not in ATTRIBUTE_MAP:
+    if awg not in DEFAULT_AWG_COLOR_MAP:
         raise ValueError(f"No attribute mapping found for AWG: {awg}")
 
     # This replaces manual lookup of standard wire attributes and part numbers.
-    attributes = ATTRIBUTE_MAP[awg].copy()
+    default_color = DEFAULT_AWG_COLOR_MAP[awg]
+    attributes = {
+        "color": default_color,
+        "wire_pn": build_wire_part_number(awg, default_color),
+    }
 
     if not color:
         return attributes
@@ -110,6 +106,27 @@ def process_signals(signals: list[dict]) -> list[dict]:
     return processed
 
 
+def build_engineering_note(current: float, awg: str, length: float, base_note: str = "") -> str:
+    """Return a concise engineering note for one wire row."""
+    notes = []
+    if base_note:
+        notes.append(base_note)
+
+    spec = get_wire_spec(awg)
+    ampacity = float(spec["ampacity_a"])
+    load_ratio = current / ampacity
+
+    if length > 15:
+        notes.append("Long run: review voltage drop")
+    elif length > 10:
+        notes.append("Voltage drop review recommended")
+
+    if load_ratio >= 0.9:
+        notes.append("Current is close to ampacity limit")
+
+    return "; ".join(dict.fromkeys(notes))
+
+
 def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
     """Return a structured wire list with a shared wire length."""
     if not isinstance(length, (int, float)):
@@ -120,8 +137,14 @@ def generate_wire_list(signals: list[dict], length: float) -> list[dict]:
 
     wire_list = []
     for signal in signals:
-        design_awg, note = get_design_awg(signal["current"], length)
+        design_awg, base_note = get_design_awg(signal["current"], length)
         attributes = map_attributes(design_awg, signal.get("color"))
+        note = build_engineering_note(
+            float(signal["current"]),
+            design_awg,
+            float(length),
+            base_note,
+        )
 
         # This turns repeated table lookups into a consistent wire-list row
         # that can be used directly for downstream BOM generation.

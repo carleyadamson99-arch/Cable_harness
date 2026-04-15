@@ -1,6 +1,7 @@
 """Output formatting helpers for the cable harness prototype."""
 
 import csv
+import io
 from collections import Counter
 
 
@@ -144,22 +145,67 @@ def export_wire_list_csv(
     wire_list: list[dict], filename: str = "wire_list.csv"
 ) -> None:
     """Export the wire list to a CSV file with headers."""
-    headers = ["signal_name", "awg", "color", "wire_pn", "length", "note"]
+    csv_text = build_wire_list_csv_text(wire_list)
 
     with open(filename, "w", newline="", encoding="utf-8") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=headers)
-        writer.writeheader()
-        writer.writerows(wire_list)
+        csv_file.write(csv_text)
+
+
+def build_wire_list_csv_text(wire_list: list[dict]) -> str:
+    """Return wire-list CSV content as a string."""
+    headers = ["signal_name", "current", "awg", "color", "wire_pn", "length", "note"]
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=headers, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(wire_list)
+    return buffer.getvalue()
 
 
 def export_bom_csv(bom: dict, filename: str = "bom.csv") -> None:
     """Export the BOM to a CSV file with headers."""
+    csv_text = build_bom_csv_text(bom)
+
     with open(filename, "w", newline="", encoding="utf-8") as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(["part_number", "quantity"])
+        csv_file.write(csv_text)
 
-        for part_number, quantity in sorted(bom["wire"].items()):
-            writer.writerow([part_number, quantity])
 
-        for part_number, quantity in sorted(bom.get("sleeve", {}).items()):
-            writer.writerow([part_number, quantity])
+def build_bom_rows(bom: dict) -> list[dict]:
+    """Return BOM rows with find numbers for display and CSV export."""
+    rows = []
+    fn = 1
+
+    for part_number, quantity in sorted(bom["wire"].items()):
+        rows.append(
+            {
+                "FN": fn,
+                "Description": "Hook-up wire",
+                "P/N": part_number,
+                "QTY": quantity,
+            }
+        )
+        fn += 1
+
+    for part_number, quantity in sorted(bom.get("sleeve", {}).items()):
+        rows.append(
+            {
+                "FN": fn,
+                "Description": "Shrink sleeve",
+                "P/N": part_number,
+                "QTY": quantity,
+            }
+        )
+        fn += 1
+
+    return rows
+
+
+def build_bom_csv_text(bom: dict) -> str:
+    """Return BOM CSV content as a string."""
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, lineterminator="\n")
+    writer.writerow(["FN", "description", "part_number", "quantity"])
+
+    for row in build_bom_rows(bom):
+        writer.writerow([row["FN"], row["Description"], row["P/N"], row["QTY"]])
+
+    return buffer.getvalue()

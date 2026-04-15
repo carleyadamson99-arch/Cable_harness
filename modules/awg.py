@@ -1,19 +1,28 @@
 """AWG lookup logic for the cable harness prototype."""
 
-# Ordered from smallest supported conductor to largest supported conductor.
-AWG_ORDER = ["22 AWG", "20 AWG", "18 AWG", "16 AWG", "14 AWG"]
+import csv
+from pathlib import Path
 
-# Phase 3/4 uses the local engineering reference values rather than the
-# original placeholder thresholds. If a requested current exceeds the
-# largest supported wire in the prototype data, the tool should flag it
-# instead of returning a misleading gauge.
-AWG_AMPACITY_LIMITS = {
-    "22 AWG": 4.5,
-    "20 AWG": 6.5,
-    "18 AWG": 9.2,
-    "16 AWG": 13.0,
-    "14 AWG": 19.0,
-}
+REFERENCE_DIR = Path(__file__).resolve().parent.parent / "reference_data"
+
+
+def load_awg_ampacity_limits() -> dict[str, float]:
+    """Return AWG ampacity limits from the shared wire-spec reference table."""
+    filepath = REFERENCE_DIR / "wire_specs.csv"
+    limits = {}
+
+    with open(filepath, newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            limits[row["awg"]] = float(row["ampacity_a"])
+
+    return limits
+
+
+def get_awg_order() -> list[str]:
+    """Return supported AWG values ordered from smallest to largest conductor."""
+    limits = load_awg_ampacity_limits()
+    return sorted(limits, key=lambda awg: int(awg.split()[0]), reverse=True)
 
 
 def get_awg(current: float) -> str:
@@ -24,28 +33,34 @@ def get_awg(current: float) -> str:
     if current <= 0:
         raise ValueError("Current must be greater than zero.")
 
+    ampacity_limits = load_awg_ampacity_limits()
+    awg_order = get_awg_order()
+
     # This replaces the manual step of checking a current-vs-AWG reference chart.
-    for awg in AWG_ORDER:
-        if current <= AWG_AMPACITY_LIMITS[awg]:
+    for awg in awg_order:
+        if current <= ampacity_limits[awg]:
             return awg
 
-    max_supported_current = AWG_AMPACITY_LIMITS[AWG_ORDER[-1]]
+    largest_awg = awg_order[-1]
+    max_supported_current = ampacity_limits[largest_awg]
     raise ValueError(
         "Current exceeds the supported prototype range. "
-        f"The largest available wire is 14 AWG at {max_supported_current:.1f} A."
+        f"The largest available wire is {largest_awg} at {max_supported_current:.1f} A."
     )
 
 
 def bump_awg_size(awg: str) -> str:
     """Return the next larger wire size when available."""
-    if awg not in AWG_ORDER:
+    awg_order = get_awg_order()
+
+    if awg not in awg_order:
         raise ValueError(f"Unknown AWG value: {awg}")
 
-    index = AWG_ORDER.index(awg)
-    if index == len(AWG_ORDER) - 1:
+    index = awg_order.index(awg)
+    if index == len(awg_order) - 1:
         return awg
 
-    return AWG_ORDER[index + 1]
+    return awg_order[index + 1]
 
 
 def get_design_awg(current: float, length: float) -> tuple[str, str]:
