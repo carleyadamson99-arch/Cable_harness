@@ -27,74 +27,111 @@ def inject_styles() -> None:
     st.markdown(
         """
         <style>
+        :root {
+            --ui-font: "Avenir Next LT Pro", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+        }
         .stApp {
             background:
                 radial-gradient(circle at top left, rgba(108, 76, 224, 0.16), transparent 24%),
                 radial-gradient(circle at top right, rgba(53, 138, 255, 0.12), transparent 22%),
                 linear-gradient(180deg, #0f1017 0%, #14151f 55%, #161726 100%);
             color: #e4e8f1;
+            font-family: var(--ui-font);
         }
         .block-container {
             max-width: 1380px;
-            padding-top: 1.5rem;
-            padding-bottom: 2rem;
+            padding-top: 3.6rem;
+            padding-bottom: 1.8rem;
+        }
+        html, body, [class*="css"], [data-testid="stAppViewContainer"], [data-testid="stMarkdownContainer"] {
+            font-family: var(--ui-font) !important;
         }
         h1, h2, h3 {
             color: #f5f7fb;
+            font-family: var(--ui-font) !important;
         }
         .section-label {
             color: #9aa4bd;
             text-transform: uppercase;
             letter-spacing: 0.22em;
             font-size: 0.72rem;
-            margin-bottom: 0.7rem;
+            margin-bottom: 0.5rem;
         }
         .copy-block {
             color: #b3bdd3;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 1.2rem;
+            font-size: 0.93rem;
+            line-height: 1.62;
+            margin-bottom: 0.9rem;
+            max-width: 46rem;
         }
         .metric-card {
-            padding: 0.9rem 1rem;
-            min-height: 108px;
+            padding: 0.85rem 0.95rem 0.9rem 0.95rem;
+            min-height: 168px;
+            height: 168px;
             border: 1px solid rgba(120, 126, 148, 0.35);
             background: linear-gradient(180deg, rgba(28, 30, 44, 0.96), rgba(21, 23, 34, 0.96));
+            border-radius: 14px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
         }
         .metric-label {
             color: #9aa4bd;
             text-transform: uppercase;
             letter-spacing: 0.16em;
             font-size: 0.69rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.45rem;
         }
         .metric-value {
             color: #f8fbff;
-            font-size: 1.45rem;
+            font-size: 1.24rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
+            line-height: 1.18;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-height: 3.6rem;
         }
         .metric-note {
             color: #afb8ca;
-            font-size: 0.88rem;
-            line-height: 1.4;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            min-height: 3.1rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            margin-top: auto;
         }
         [data-testid="stForm"] {
             border: none;
             background: transparent;
             padding: 0;
         }
+        [data-testid="stForm"] > div {
+            gap: 0.35rem;
+        }
         [data-testid="stForm"] input {
             background: rgba(24, 26, 36, 0.95) !important;
             color: #f3f7fd !important;
             border: 1px solid rgba(94, 98, 119, 0.45) !important;
             border-radius: 10px !important;
+            min-height: 2.8rem;
+        }
+        [data-baseweb="select"] > div {
+            background: rgba(24, 26, 36, 0.95) !important;
+            border: 1px solid rgba(94, 98, 119, 0.45) !important;
+            border-radius: 10px !important;
+            min-height: 2.8rem;
         }
         [data-testid="stForm"] label p {
             color: #a6b0c8 !important;
             text-transform: uppercase;
             letter-spacing: 0.16em;
             font-size: 0.70rem !important;
+        }
+        [data-testid="stNumberInput-stepUp"], [data-testid="stNumberInput-stepDown"] {
+            border-radius: 8px !important;
         }
         .stButton button, .stFormSubmitButton button {
             background: linear-gradient(180deg, #cf6b73, #8c3142) !important;
@@ -104,28 +141,30 @@ def inject_styles() -> None:
             font-weight: 700 !important;
             padding: 0.82rem 1.3rem !important;
             box-shadow: 0 12px 32px rgba(161, 58, 77, 0.28);
+            letter-spacing: 0.03em;
         }
         .divider {
             height: 1px;
             background: linear-gradient(90deg, rgba(113,120,141,0), rgba(113,120,141,0.4), rgba(113,120,141,0));
-            margin: 1.2rem 0;
+            margin: 1rem 0 1.1rem 0;
         }
         .wire-card {
             border: 1px solid rgba(103, 110, 131, 0.22);
             border-radius: 18px;
             background: linear-gradient(180deg, rgba(25, 27, 39, 0.98), rgba(19, 21, 31, 0.98));
             overflow: hidden;
+            box-shadow: 0 14px 40px rgba(5, 7, 13, 0.22);
         }
         .wire-card-header {
             border-bottom: 1px solid rgba(103, 110, 131, 0.22);
-            padding: 0.9rem 1.1rem;
+            padding: 0.82rem 1.05rem;
             color: #9aa4bd;
             text-transform: uppercase;
             letter-spacing: 0.2em;
             font-size: 0.72rem;
         }
         .wire-card-body {
-            padding: 0.8rem 1.1rem 1rem 1.1rem;
+            padding: 0.75rem 1rem 0.95rem 1rem;
         }
         .text-panel {
             padding: 0.95rem 1rem;
@@ -141,6 +180,9 @@ def inject_styles() -> None:
             border: 1px solid rgba(103, 110, 131, 0.2);
             border-radius: 14px;
             overflow: hidden;
+        }
+        [data-testid="stDataFrame"] {
+            margin-top: 0.15rem;
         }
         </style>
         """,
@@ -328,7 +370,6 @@ def render_harness_visual(
             f'stroke="{color}" stroke-width="4" stroke-linecap="round" />'
         )
         left_labels.append(
-            f'<circle cx="{label_left_x - 16}" cy="{y}" r="5.5" fill="{color}" />'
             f'<text x="{label_left_x}" y="{y + 4}" text-anchor="end" fill="#eef3fb" '
             f'font-size="{label_font_size}" font-family="monospace">{signal_name}</text>'
         )

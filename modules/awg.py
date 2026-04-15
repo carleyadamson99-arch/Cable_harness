@@ -1,6 +1,19 @@
 """AWG lookup logic for the cable harness prototype."""
 
+# Ordered from smallest supported conductor to largest supported conductor.
 AWG_ORDER = ["22 AWG", "20 AWG", "18 AWG", "16 AWG", "14 AWG"]
+
+# Phase 3/4 uses the local engineering reference values rather than the
+# original placeholder thresholds. If a requested current exceeds the
+# largest supported wire in the prototype data, the tool should flag it
+# instead of returning a misleading gauge.
+AWG_AMPACITY_LIMITS = {
+    "22 AWG": 4.5,
+    "20 AWG": 6.5,
+    "18 AWG": 9.2,
+    "16 AWG": 13.0,
+    "14 AWG": 19.0,
+}
 
 
 def get_awg(current: float) -> str:
@@ -12,16 +25,15 @@ def get_awg(current: float) -> str:
         raise ValueError("Current must be greater than zero.")
 
     # This replaces the manual step of checking a current-vs-AWG reference chart.
-    if current <= 5:
-        return "22 AWG"
-    if current <= 10:
-        return "20 AWG"
-    if current <= 15:
-        return "18 AWG"
-    if current <= 20:
-        return "16 AWG"
+    for awg in AWG_ORDER:
+        if current <= AWG_AMPACITY_LIMITS[awg]:
+            return awg
 
-    return "14 AWG"
+    max_supported_current = AWG_AMPACITY_LIMITS[AWG_ORDER[-1]]
+    raise ValueError(
+        "Current exceeds the supported prototype range. "
+        f"The largest available wire is 14 AWG at {max_supported_current:.1f} A."
+    )
 
 
 def bump_awg_size(awg: str) -> str:
@@ -65,4 +77,7 @@ if __name__ == "__main__":
     print(get_awg(8.5))
     print(get_awg(14.0))
     print(get_awg(19.5))
-    print(get_awg(25.0))
+    try:
+        print(get_awg(25.0))
+    except ValueError as error:
+        print(error)
