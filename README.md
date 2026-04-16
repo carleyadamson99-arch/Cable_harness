@@ -33,6 +33,7 @@ Outputs currently supported:
 - voltage-drop guidance
 - harness routing view in Streamlit
 - CSV export for wire list and BOM
+- dark-themed GUI tables and direct download buttons
 
 Current implemented logic includes:
 - AWG lookup using local reference ampacity values
@@ -42,9 +43,9 @@ Current implemented logic includes:
 - length-aware AWG bump for long cable runs
 - wire part-number mapping
 - per-wire engineering notes in the GUI and wire-list CSV export
-- bundle diameter calculation
+- bundle diameter calculation using RMS wire diameter and bundle factor
 - sleeve selection from fit-range reference data
-- sleeve BOM quantity based on cable length
+- sleeve BOM quantity using margin, tolerance, and rounding rules
 
 ## How To Run
 
@@ -94,6 +95,7 @@ Completed:
 - CSV export
 - direct CSV download buttons in the GUI
 - polished dark-mode interface for demo use
+- dark-themed tables and dark download-button styling
 
 ### Phase 3: Better Engineering Rules
 Status: Complete for current prototype scope
@@ -112,51 +114,49 @@ Future Phase 3 enhancements:
 - expand the supported AWG/current range even further if the project grows beyond the current prototype envelope
 
 ### Phase 4: Harness Packaging Features
-Status: Core prototype complete, refinement still needed
+Status: Complete for prototype scope
 
 Completed:
 - reference-data extraction from engineering spreadsheets
-- bundle diameter calculation
+- bundle diameter calculation using RMS wire diameter and bundle factor
 - sleeve recommendation from min/max fit ranges
 - sleeve BOM line item
 - packaging summary in the tool
 - packaging data reflected in the BOM and CSV export flow
+- sleeve length logic with 3 percent margin, 6 in tolerance, and rounding to the nearest 0.5 ft
+- packaging summary now explains bundle-diameter and sleeve-length methods
+- graceful no-fit sleeve handling so the tool still returns wire results, surfaces a packaging warning, and omits unresolved sleeve BOM lines
 
-Remaining to fully close Phase 4:
-- add sleeve length margin and tolerance rules instead of using only entered cable length
-- improve bundle sizing fidelity beyond average-diameter estimation
-- validate edge cases where no sleeve fit is available or where future packaging materials are added
+Future Phase 4 enhancements:
+- expose packaging-calculation details more explicitly in the GUI and export outputs if more traceability is needed
+- expand packaging coverage if future sleeve families or additional packaging materials are added
 
 ## Best Next Improvements
 
-If the goal is to fully close the unfinished phases, the highest-value next steps are:
+With the four prototype phases now complete, the highest-value next steps are:
 
-1. Refine sleeve length logic
-- Use margin and tolerance rules from the original spreadsheet data so sleeve quantities are more realistic than raw cable length alone.
+1. Improve packaging traceability
+- Show packaging calculation details more explicitly in the GUI and exports if reviewers need to trace sleeve quantities and bundle assumptions.
 
-2. Improve packaging robustness
-- Handle no-fit sleeve cases more gracefully and make packaging outputs more explicit in exported deliverables.
-
-3. Improve bundle sizing fidelity
-- Replace the current average-diameter estimate with a more realistic bundle-sizing method if higher packaging accuracy is needed.
-
-4. Deepen electrical analysis
+2. Deepen electrical analysis
 - Upgrade voltage-drop guidance from a simple review note into a more explicit engineering calculation.
+
+3. Expand packaging scope if needed
+- Add future packaging materials or branch-level packaging logic if the prototype grows beyond a single sleeve recommendation.
 
 ## Recommended Definition Of "Phase Complete"
 
 To mark the remaining phases as fully complete, I'd recommend using this standard:
 
 - Phase 3 is complete when the engineering rules are data-backed, transparent to the user, and robust across the supported prototype current range.
-- Phase 4 is complete when packaging outputs are not only recommended on-screen, but also calculated with realistic quantities and exported clearly.
+- Phase 4 is complete when packaging outputs are recommended on-screen, calculated with realistic quantities, exported clearly, and robust when no sleeve fit is available.
 
 ## Suggested Next Build Order
 
-The cleanest order to finish the project is:
+If you want to deepen the prototype beyond its current completed state, the cleanest order is:
 
-1. Refine sleeve-length calculation using margin and tolerance rules.
-2. Add packaging edge-case handling for no-fit or unsupported cases.
-3. Improve bundle-diameter calculation fidelity.
-4. Upgrade voltage-drop guidance into a more explicit calculation.
+1. Improve packaging traceability in the GUI and exports.
+2. Upgrade voltage-drop guidance into a more explicit calculation.
+3. Expand packaging scope only if the project needs more than a single-sleeve workflow.
 
-That path would let the README honestly say all four phases are complete for the intended prototype scope.
+That path would build on a prototype that already completes all four planned phases.

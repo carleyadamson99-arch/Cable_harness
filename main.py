@@ -143,9 +143,12 @@ def main() -> None:
     print(format_packaging_data(packaging_data))
     print()
     print("FLAGS")
+    packaging_warning = packaging_data.get("packaging_warning", "")
+    if packaging_warning:
+        print(f"- {packaging_warning}")
     if voltage_flag:
         print(f"- {voltage_flag}")
-    else:
+    if not packaging_warning and not voltage_flag:
         print("- None")
     print()
 

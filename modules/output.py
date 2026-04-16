@@ -13,7 +13,7 @@ def generate_bom(wire_list: list[dict], packaging_data: dict | None = None) -> d
     for wire in wire_list:
         wire_counts[wire["wire_pn"]] += float(wire["length"])
 
-    if packaging_data:
+    if packaging_data and packaging_data.get("has_valid_sleeve", True):
         sleeve_counts[packaging_data["recommended_sleeve_pn"]] += float(
             packaging_data["sleeve_length_ft"]
         )
@@ -126,17 +126,32 @@ def format_packaging_data(packaging_data: dict) -> str:
     """Return a printable summary of packaging calculations."""
     lines = [
         f"Bundle Diameter: {packaging_data['bundle_diameter_in']:.3f} in",
+        str(packaging_data.get("bundle_diameter_method", "")),
         f"Recommended Sleeve: {packaging_data['recommended_sleeve_pn']}",
-        (
-            "Sleeve Fit Range: "
-            f"{packaging_data['sleeve_min_diameter_in']:.3f} in to "
-            f"{packaging_data['sleeve_max_diameter_in']:.3f} in"
-        ),
-        (
-            "Sleeve Wall Thickness: "
-            f"{packaging_data['sleeve_wall_thickness_in']:.3f} in"
-        ),
+        f"Sleeve Quantity: {packaging_data['sleeve_length_ft']:.1f} ft",
+        str(packaging_data["sleeve_length_note"]),
     ]
+
+    if packaging_data.get("has_valid_sleeve", True):
+        lines.insert(
+            3,
+            (
+                "Sleeve Fit Range: "
+                f"{packaging_data['sleeve_min_diameter_in']:.3f} in to "
+                f"{packaging_data['sleeve_max_diameter_in']:.3f} in"
+            ),
+        )
+        lines.insert(
+            4,
+            (
+                "Sleeve Wall Thickness: "
+                f"{packaging_data['sleeve_wall_thickness_in']:.3f} in"
+            ),
+        )
+
+    packaging_warning = packaging_data.get("packaging_warning", "")
+    if packaging_warning:
+        lines.append(packaging_warning)
 
     return "\n".join(lines)
 

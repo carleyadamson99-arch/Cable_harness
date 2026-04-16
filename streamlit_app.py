@@ -18,6 +18,14 @@ COLOR_HEX = {
     "yellow": "#f6bf4f",
     "green": "#38c793",
 }
+COLOR_TEXT_HEX = {
+    "black": "#f4f7fd",
+    "red": "#ff3e45",
+    "blue": "#3f6fff",
+    "white": "#f4f7fd",
+    "yellow": "#f0c63f",
+    "green": "#2fd168",
+}
 AUTO_COLOR_LABEL = "Auto (Recommended)"
 LOGO_PATH = Path(__file__).resolve().parent / "CA_LOGO.png"
 
@@ -34,6 +42,10 @@ def inject_styles() -> None:
             color-scheme: dark !important;
             background: #0f1017 !important;
         }
+        body {
+            background: #0f1017 !important;
+            color: #e4e8f1 !important;
+        }
         .stApp {
             background:
                 radial-gradient(circle at top left, rgba(108, 76, 224, 0.16), transparent 24%),
@@ -41,6 +53,20 @@ def inject_styles() -> None:
                 linear-gradient(180deg, #0f1017 0%, #14151f 55%, #161726 100%);
             color: #e4e8f1;
             font-family: var(--ui-font);
+        }
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMain"],
+        [data-testid="stMainBlockContainer"],
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"],
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarContent"],
+        [data-testid="stDecoration"] {
+            background: #0f1017 !important;
+            color: #e4e8f1 !important;
+        }
+        header, section[data-testid="stSidebar"], div[data-testid="stToolbar"] {
+            background: rgba(15, 16, 23, 0.98) !important;
         }
         .block-container {
             max-width: 1380px;
@@ -132,33 +158,76 @@ def inject_styles() -> None:
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
             padding-left: 0.8rem !important;
         }
+        [data-baseweb="select"] {
+            background: transparent !important;
+        }
         [data-baseweb="select"] > div {
             background: rgba(16, 18, 28, 0.98) !important;
             border: 1px solid rgba(128, 138, 170, 0.6) !important;
             border-radius: 10px !important;
-            min-height: 2.8rem;
+            min-height: 2.8rem !important;
+            height: 2.8rem !important;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
-            padding-left: 0.15rem !important;
         }
         [data-baseweb="select"] * {
-            color: #f8fbff !important;
+            color: #f4f7fd !important;
             font-size: 0.98rem !important;
-            font-weight: 600 !important;
         }
-        [role="listbox"], [data-baseweb="menu"] {
-            background: rgba(16, 18, 28, 0.98) !important;
-            border: 1px solid rgba(128, 138, 170, 0.35) !important;
+        [data-baseweb="select"] [role="button"] {
+            min-height: 2.8rem !important;
+            height: 2.8rem !important;
+            padding-left: 0.78rem !important;
+            padding-right: 0.6rem !important;
+        }
+        [data-baseweb="select"] [data-value] {
+            font-weight: 700 !important;
+        }
+        [data-baseweb="select"] [data-value] span,
+        [data-baseweb="select"] [data-value] div,
+        [data-baseweb="select"] input {
+            color: #f4f7fd !important;
+            font-weight: 700 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        [data-baseweb="select"] svg {
+            fill: #f4f7fd !important;
+            color: #f4f7fd !important;
+        }
+        [data-baseweb="select"] > div:hover {
+            border-color: rgba(161, 188, 255, 0.78) !important;
+            background: rgba(20, 23, 36, 1) !important;
+        }
+        [data-baseweb="popover"] {
+            background: rgba(11, 13, 20, 0.98) !important;
+        }
+        [role="listbox"], [data-baseweb="menu"], [data-baseweb="popover"] ul, [data-baseweb="popover"] li {
+            background: #141826 !important;
             border-radius: 12px !important;
-            box-shadow: 0 18px 38px rgba(4, 7, 12, 0.44) !important;
+            color: #f7fbff !important;
+        }
+        [role="listbox"], [data-baseweb="menu"], [data-baseweb="popover"] ul {
+            border: 1px solid rgba(144, 158, 197, 0.42) !important;
+            box-shadow: 0 18px 38px rgba(4, 7, 12, 0.58) !important;
+            padding: 0.35rem !important;
         }
         [role="option"] {
-            color: #f4f7fc !important;
-            background: transparent !important;
+            color: #f7fbff !important;
+            background: #141826 !important;
             font-weight: 600 !important;
+            border-radius: 8px !important;
+            min-height: 2.3rem !important;
+            padding: 0.55rem 0.7rem !important;
         }
         [role="option"][aria-selected="true"],
         [role="option"]:hover {
-            background: rgba(66, 92, 173, 0.28) !important;
+            background: rgba(78, 103, 194, 0.46) !important;
+            color: #ffffff !important;
+        }
+        [role="option"] span,
+        [role="option"] div {
+            color: inherit !important;
         }
         [data-baseweb="base-input"] input::placeholder,
         [data-testid="stForm"] input::placeholder {
@@ -199,6 +268,24 @@ def inject_styles() -> None:
             box-shadow: 0 12px 32px rgba(161, 58, 77, 0.28);
             letter-spacing: 0.03em;
         }
+        [data-testid="stDownloadButton"] button {
+            background: linear-gradient(180deg, rgba(24, 28, 40, 0.98), rgba(18, 21, 31, 0.98)) !important;
+            color: #f3f7fd !important;
+            border: 1px solid rgba(86, 92, 116, 0.42) !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            min-height: 3rem !important;
+            box-shadow: none !important;
+            letter-spacing: 0.01em !important;
+        }
+        [data-testid="stDownloadButton"] button:hover {
+            background: linear-gradient(180deg, rgba(31, 36, 52, 0.98), rgba(22, 26, 38, 0.98)) !important;
+            border-color: rgba(128, 138, 170, 0.52) !important;
+            color: #ffffff !important;
+        }
+        [data-testid="stDownloadButton"] button:focus {
+            box-shadow: 0 0 0 1px rgba(161, 188, 255, 0.45), 0 0 18px rgba(74, 109, 214, 0.18) !important;
+        }
         .divider {
             height: 1px;
             background: linear-gradient(90deg, rgba(113,120,141,0), rgba(113,120,141,0.4), rgba(113,120,141,0));
@@ -222,6 +309,74 @@ def inject_styles() -> None:
         .wire-card-body {
             padding: 0.75rem 1rem 0.95rem 1rem;
         }
+        .dark-table-wrap {
+            border: 1px solid rgba(86, 92, 116, 0.34);
+            border-radius: 16px;
+            overflow: hidden;
+            overflow-x: auto;
+            background: linear-gradient(180deg, rgba(19, 22, 33, 0.98), rgba(15, 17, 26, 0.98));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+        .dark-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 820px;
+        }
+        .dark-table thead tr {
+            background: rgba(31, 35, 48, 0.98);
+        }
+        .dark-table th {
+            color: #aeb9d2;
+            text-transform: none;
+            letter-spacing: 0.01em;
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-align: left;
+            padding: 0.86rem 0.8rem;
+            border-bottom: 1px solid rgba(86, 92, 116, 0.32);
+            border-right: 1px solid rgba(86, 92, 116, 0.22);
+            white-space: nowrap;
+        }
+        .dark-table th:last-child {
+            border-right: none;
+        }
+        .dark-table td {
+            color: #f3f7fd;
+            padding: 0.78rem 0.8rem;
+            border-bottom: 1px solid rgba(86, 92, 116, 0.18);
+            border-right: 1px solid rgba(86, 92, 116, 0.14);
+            vertical-align: top;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .dark-table td:last-child {
+            border-right: none;
+        }
+        .dark-table tbody tr:nth-child(odd) {
+            background: rgba(18, 21, 32, 0.82);
+        }
+        .dark-table tbody tr:nth-child(even) {
+            background: rgba(15, 18, 28, 0.82);
+        }
+        .dark-table tbody tr:hover {
+            background: rgba(32, 38, 56, 0.88);
+        }
+        .dark-table td.note-cell {
+            color: #cfd8ea;
+            line-height: 1.4;
+            min-width: 18rem;
+            font-weight: 500;
+            white-space: normal;
+        }
+        .dark-table td.status-ok {
+            color: #f3f7fd;
+            font-weight: 600;
+        }
+        .dark-table td.status-check {
+            color: #f0c86e;
+            font-weight: 700;
+        }
         .text-panel {
             padding: 0.95rem 1rem;
             border-radius: 14px;
@@ -240,6 +395,9 @@ def inject_styles() -> None:
         [data-testid="stDataFrame"] {
             margin-top: 0.15rem;
         }
+        [data-testid="stMarkdownContainer"], [data-testid="stText"], p, span, div {
+            color: inherit;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -253,7 +411,7 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
         color.title() for color in get_available_colors()
     ]
 
-    header_cols = st.columns([1.45, 0.8, 0.95], gap="small")
+    header_cols = st.columns([1.28, 0.68, 1.34], gap="small")
     with header_cols[0]:
         st.markdown('<div class="section-label">Signal Name</div>', unsafe_allow_html=True)
     with header_cols[1]:
@@ -262,7 +420,7 @@ def build_signal_inputs(conductor_count: int) -> list[dict]:
         st.markdown('<div class="section-label">Color</div>', unsafe_allow_html=True)
 
     for index in range(1, conductor_count + 1):
-        left, middle, right = st.columns([1.45, 0.8, 0.95], gap="small")
+        left, middle, right = st.columns([1.28, 0.68, 1.34], gap="small")
         with left:
             signal_name = st.text_input(
                 f"Signal name {index}",
@@ -356,41 +514,74 @@ def to_wire_dataframe(wire_list: list[dict]) -> pd.DataFrame:
                 "Resistance": f"{resistance:.4f} ohm",
                 "Voltage Drop": f"{voltage_drop:.3f}V / {voltage_drop_pct:.2f}%",
                 "Status": status,
-                "Engineering Note": wire.get("note", ""),
             }
         )
 
     return pd.DataFrame(rows)
+
+
+def build_notes_summary(
+    wire_list: list[dict], packaging_data: dict, voltage_flag: str
+) -> str:
+    """Return a simple text summary of engineering and packaging notes."""
+    lines = []
+
+    for wire in wire_list:
+        note = wire.get("note", "").strip()
+        if note:
+            lines.append(f"{wire['signal_name']}: {note}")
+
+    packaging_warning = packaging_data.get("packaging_warning", "").strip()
+    if packaging_warning:
+        lines.append(packaging_warning)
+
+    if voltage_flag:
+        lines.append(voltage_flag)
+
+    if not lines:
+        lines.append("No additional engineering notes for this design.")
+
+    return "\n".join(lines)
 
 
 def to_bom_dataframe(bom: dict) -> pd.DataFrame:
     """Return a display-friendly BOM table."""
-    rows = []
-    fn = 1
+    from modules.output import build_bom_rows
 
-    for part_number, quantity in sorted(bom["wire"].items()):
-        rows.append(
-            {
-                "FN": fn,
-                "Description": "Hook-up wire",
-                "P/N": part_number,
-                "QTY": f"{quantity:.1f}",
-            }
-        )
-        fn += 1
-
-    for part_number, quantity in sorted(bom.get("sleeve", {}).items()):
-        rows.append(
-            {
-                "FN": fn,
-                "Description": "Shrink sleeve",
-                "P/N": part_number,
-                "QTY": f"{quantity:.1f}",
-            }
-        )
-        fn += 1
+    rows = build_bom_rows(bom)
+    for row in rows:
+        row["QTY"] = f"{float(row['QTY']):.1f}"
 
     return pd.DataFrame(rows)
+
+
+def render_dark_table(df: pd.DataFrame, note_column: str | None = None, status_column: str | None = None) -> None:
+    """Render a consistently dark HTML table."""
+    headers = "".join(f"<th>{escape(str(column))}</th>" for column in df.columns)
+    body_rows = []
+
+    for _, row in df.iterrows():
+        cells = []
+        for column in df.columns:
+            value = "" if pd.isna(row[column]) else str(row[column])
+            classes = []
+            if note_column and column == note_column:
+                classes.append("note-cell")
+            if status_column and column == status_column:
+                classes.append(f"status-{value.strip().lower()}")
+            class_attr = f' class="{" ".join(classes)}"' if classes else ""
+            cells.append(f"<td{class_attr}>{escape(value)}</td>")
+        body_rows.append("<tr>" + "".join(cells) + "</tr>")
+
+    html = (
+        '<div class="dark-table-wrap">'
+        '<table class="dark-table">'
+        f"<thead><tr>{headers}</tr></thead>"
+        f"<tbody>{''.join(body_rows)}</tbody>"
+        "</table>"
+        "</div>"
+    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def render_harness_visual(
@@ -583,7 +774,11 @@ def main() -> None:
             metric_card(
                 "Recommended Sleeve",
                 packaging_data["recommended_sleeve_pn"],
-                "Selected from fit-range reference data",
+                (
+                    "Selected from fit-range reference data"
+                    if packaging_data.get("has_valid_sleeve", True)
+                    else "No matching sleeve in current lookup range"
+                ),
             )
 
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
@@ -591,11 +786,18 @@ def main() -> None:
 
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-label">Wire Details</div>', unsafe_allow_html=True)
-        st.dataframe(to_wire_dataframe(wire_list), use_container_width=True, hide_index=True)
+        render_dark_table(to_wire_dataframe(wire_list), status_column="Status")
 
         st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="section-label">Bill of Materials</div>', unsafe_allow_html=True)
-        st.dataframe(to_bom_dataframe(bom), use_container_width=True, hide_index=True)
+        render_dark_table(to_bom_dataframe(bom))
+
+        st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="section-label">Notes</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="text-panel">{escape(build_notes_summary(wire_list, packaging_data, voltage_flag))}</div>',
+            unsafe_allow_html=True,
+        )
 
         st.markdown("<div style='height: 0.6rem;'></div>", unsafe_allow_html=True)
         export_cols = st.columns(2, gap="small")
@@ -615,6 +817,10 @@ def main() -> None:
                 mime="text/csv",
                 use_container_width=True,
             )
+
+        packaging_warning = packaging_data.get("packaging_warning", "")
+        if packaging_warning:
+            st.warning(packaging_warning)
 
         if voltage_flag:
             st.warning(voltage_flag)
