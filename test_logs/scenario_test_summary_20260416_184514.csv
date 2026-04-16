@@ -1,0 +1,5 @@
+scenario,status,conductors,length_ft,wire_part_numbers,sleeve_part_numbers,voltage_flag,packaging_warning,error
+baseline_low_current,PASS,3,12.0,WIRE-22-WHT-001,M23053/13-012-0,Voltage drop check recommended,,
+long_run_awg_bump,PASS,2,20.0,WIRE-14-BLK-001; WIRE-14-GRN-001,M23053/13-001-0,Voltage drop check strongly recommended for this cable length,,
+mixed_current_bundle,PASS,4,15.0,WIRE-12-BLK-001; WIRE-12-RED-001; WIRE-18-YEL-001; WIRE-22-BLU-001,M23053/13-002-0,Voltage drop check recommended,,
+no_fit_sleeve_case,PASS,39,12.0,WIRE-2-GRN-001,,Voltage drop check recommended,"No sleeve range found for bundle diameter 2.428 in. Wire design remains valid, but sleeve selection requires manual review.",
