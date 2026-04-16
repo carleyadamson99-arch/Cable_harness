@@ -69,9 +69,11 @@ def inject_styles() -> None:
             background: rgba(15, 16, 23, 0.98) !important;
         }
         .block-container {
-            max-width: 1380px;
+            max-width: 1680px;
             padding-top: 3.6rem;
             padding-bottom: 1.8rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
         html, body, [class*="css"], [data-testid="stAppViewContainer"], [data-testid="stMarkdownContainer"] {
             font-family: var(--ui-font) !important;
@@ -313,15 +315,15 @@ def inject_styles() -> None:
             border: 1px solid rgba(86, 92, 116, 0.34);
             border-radius: 16px;
             overflow: hidden;
-            overflow-x: auto;
             background: linear-gradient(180deg, rgba(19, 22, 33, 0.98), rgba(15, 17, 26, 0.98));
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            width: 100%;
         }
         .dark-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
-            min-width: 820px;
+            font-size: 0.84rem;
+            table-layout: auto;
         }
         .dark-table thead tr {
             background: rgba(31, 35, 48, 0.98);
@@ -330,25 +332,26 @@ def inject_styles() -> None:
             color: #aeb9d2;
             text-transform: none;
             letter-spacing: 0.01em;
-            font-size: 0.72rem;
+            font-size: 0.70rem;
             font-weight: 500;
             text-align: left;
-            padding: 0.86rem 0.8rem;
+            padding: 0.78rem 0.62rem;
             border-bottom: 1px solid rgba(86, 92, 116, 0.32);
             border-right: 1px solid rgba(86, 92, 116, 0.22);
-            white-space: nowrap;
+            white-space: normal;
         }
         .dark-table th:last-child {
             border-right: none;
         }
         .dark-table td {
             color: #f3f7fd;
-            padding: 0.78rem 0.8rem;
+            padding: 0.74rem 0.62rem;
             border-bottom: 1px solid rgba(86, 92, 116, 0.18);
             border-right: 1px solid rgba(86, 92, 116, 0.14);
             vertical-align: top;
             font-weight: 600;
-            white-space: nowrap;
+            white-space: normal;
+            word-break: break-word;
         }
         .dark-table td:last-child {
             border-right: none;
@@ -365,7 +368,6 @@ def inject_styles() -> None:
         .dark-table td.note-cell {
             color: #cfd8ea;
             line-height: 1.4;
-            min-width: 18rem;
             font-weight: 500;
             white-space: normal;
         }
@@ -687,7 +689,7 @@ def main() -> None:
     st.set_page_config(page_title="Cable Automator", layout="wide")
     inject_styles()
 
-    left, right = st.columns([0.95, 1.25], gap="large")
+    left, right = st.columns([0.86, 1.44], gap="large")
 
     with left:
         if LOGO_PATH.exists():
