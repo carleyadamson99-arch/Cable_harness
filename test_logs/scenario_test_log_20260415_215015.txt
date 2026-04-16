@@ -1,0 +1,44 @@
+Cable Harness Scenario Test Log
+================================
+Generated: 2026-04-15T21:50:15
+
+Scenario: baseline_low_current
+Description: Nominal small harness with low current and valid sleeve fit.
+Status: PASS
+Conductors: 3
+Length (ft): 12.0
+Wire P/Ns: WIRE-22-WHT-001
+Sleeve P/Ns: M23053/13-012-0
+Voltage Flag: Voltage drop check recommended
+Packaging Warning: None
+------------------------------------------------
+Scenario: long_run_awg_bump
+Description: Long cable run should increase AWG and trigger voltage review.
+Status: PASS
+Conductors: 2
+Length (ft): 20.0
+Wire P/Ns: WIRE-14-BLK-001, WIRE-14-GRN-001
+Sleeve P/Ns: M23053/13-001-0
+Voltage Flag: Voltage drop check strongly recommended for this cable length
+Packaging Warning: None
+------------------------------------------------
+Scenario: mixed_current_bundle
+Description: Mixed loads should produce multiple gauges and a normal sleeve fit.
+Status: PASS
+Conductors: 4
+Length (ft): 15.0
+Wire P/Ns: WIRE-12-BLK-001, WIRE-12-RED-001, WIRE-18-YEL-001, WIRE-22-BLU-001
+Sleeve P/Ns: M23053/13-002-0
+Voltage Flag: Voltage drop check recommended
+Packaging Warning: None
+------------------------------------------------
+Scenario: no_fit_sleeve_case
+Description: Large bundle should keep wire results and warn when no sleeve fits.
+Status: PASS
+Conductors: 39
+Length (ft): 12.0
+Wire P/Ns: WIRE-2-GRN-001
+Sleeve P/Ns: None
+Voltage Flag: Voltage drop check recommended
+Packaging Warning: No sleeve range found for bundle diameter 2.428 in. Wire design remains valid, but sleeve selection requires manual review.
+------------------------------------------------
