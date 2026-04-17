@@ -160,3 +160,47 @@ If you want to deepen the prototype beyond its current completed state, the clea
 3. Expand packaging scope only if the project needs more than a single-sleeve workflow.
 
 That path would build on a prototype that already completes all four planned phases.
+
+## Terminal Commands
+
+Use these commands from the project root folder.
+
+Run the Streamlit app:
+```powershell
+& "C:\Users\carby\AppData\Local\Programs\Python\Python312\python.exe" -m streamlit run streamlit_app.py
+```
+
+Run the terminal version:
+```powershell
+& "C:\Users\carby\AppData\Local\Programs\Python\Python312\python.exe" main.py
+```
+
+Run all unit tests:
+```powershell
+& "C:\Users\carby\AppData\Local\Programs\Python\Python312\python.exe" -m unittest tests.test_core tests.test_packaging
+```
+
+Run the scenario-based test script:
+```powershell
+& "C:\Users\carby\AppData\Local\Programs\Python\Python312\python.exe" run_scenario_tests.py
+```
+
+Build the HTML reports from a scenario JSON log:
+```powershell
+& "C:\Users\carby\AppData\Local\Programs\Python\Python312\python.exe" build_scenario_report.py test_logs\scenario_test_log_20260416_182830.json
+```
+
+Open the latest demo report:
+```powershell
+start .\test_logs\latest_report.html
+```
+
+Open the latest print-friendly report:
+```powershell
+start .\test_logs\latest_report_print.html
+```
+
+Open the test log folder:
+```powershell
+explorer .\test_logs
+```

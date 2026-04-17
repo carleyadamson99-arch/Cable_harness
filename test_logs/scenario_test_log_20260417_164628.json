@@ -1,0 +1,136 @@
+[
+  {
+    "name": "baseline_low_current",
+    "description": "Nominal small harness with low current and valid sleeve fit.",
+    "status": "PASS",
+    "conductor_count": 3,
+    "length_ft": 12.0,
+    "wire_count": 3,
+    "wire_part_numbers": [
+      "WIRE-22-WHT-001"
+    ],
+    "sleeve_part_numbers": [
+      "M23053/13-012-0"
+    ],
+    "packaging_warning": "",
+    "voltage_flag": "Voltage drop check recommended",
+    "wire_csv": "signal_name,current,awg,color,wire_pn,length,note\nSIGNAL_1,1.0,22 AWG,white,WIRE-22-WHT-001,12.0,Voltage drop review recommended\nSIGNAL_2,1.0,22 AWG,white,WIRE-22-WHT-001,12.0,Voltage drop review recommended\nSIGNAL_3,1.0,22 AWG,white,WIRE-22-WHT-001,12.0,Voltage drop review recommended\n",
+    "bom_csv": "FN,description,part_number,quantity\n1,Hook-up wire,WIRE-22-WHT-001,36.0\n2,Shrink sleeve,M23053/13-012-0,13.0\n",
+    "packaging": {
+      "bundle_diameter_in": 0.10241,
+      "bundle_diameter_method": "Bundle diameter estimated using RMS wire diameter and bundle factor",
+      "recommended_sleeve_pn": "M23053/13-012-0",
+      "has_valid_sleeve": true,
+      "packaging_warning": "",
+      "sleeve_min_diameter_in": 0.062,
+      "sleeve_max_diameter_in": 0.125,
+      "sleeve_wall_thickness_in": 0.03,
+      "sleeve_length_ft": 13.0,
+      "sleeve_length_in": 154.32,
+      "sleeve_length_note": "Sleeve length includes 3% margin and 6 in tolerance, rounded up to nearest 0.5 ft",
+      "margin_percent": 3.0,
+      "tolerance_in": 6.0
+    }
+  },
+  {
+    "name": "long_run_awg_bump",
+    "description": "Long cable run should increase AWG and trigger voltage review.",
+    "status": "PASS",
+    "conductor_count": 2,
+    "length_ft": 20.0,
+    "wire_count": 2,
+    "wire_part_numbers": [
+      "WIRE-14-BLK-001",
+      "WIRE-14-GRN-001"
+    ],
+    "sleeve_part_numbers": [
+      "M23053/13-001-0"
+    ],
+    "packaging_warning": "",
+    "voltage_flag": "Voltage drop check strongly recommended for this cable length",
+    "wire_csv": "signal_name,current,awg,color,wire_pn,length,note\nPWR_MAIN,12.0,14 AWG,black,WIRE-14-BLK-001,20.0,AWG increased for longer cable run; Long run: review voltage drop\nPWR_RETURN,12.0,14 AWG,green,WIRE-14-GRN-001,20.0,AWG increased for longer cable run; Long run: review voltage drop\n",
+    "bom_csv": "FN,description,part_number,quantity\n1,Hook-up wire,WIRE-14-BLK-001,20.0\n2,Hook-up wire,WIRE-14-GRN-001,20.0\n3,Shrink sleeve,M23053/13-001-0,21.5\n",
+    "packaging": {
+      "bundle_diameter_in": 0.15389999999999998,
+      "bundle_diameter_method": "Bundle diameter estimated using RMS wire diameter and bundle factor",
+      "recommended_sleeve_pn": "M23053/13-001-0",
+      "has_valid_sleeve": true,
+      "packaging_warning": "",
+      "sleeve_min_diameter_in": 0.093,
+      "sleeve_max_diameter_in": 0.187,
+      "sleeve_wall_thickness_in": 0.035,
+      "sleeve_length_ft": 21.5,
+      "sleeve_length_in": 253.20000000000002,
+      "sleeve_length_note": "Sleeve length includes 3% margin and 6 in tolerance, rounded up to nearest 0.5 ft",
+      "margin_percent": 3.0,
+      "tolerance_in": 6.0
+    }
+  },
+  {
+    "name": "mixed_current_bundle",
+    "description": "Mixed loads should produce multiple gauges and a normal sleeve fit.",
+    "status": "PASS",
+    "conductor_count": 4,
+    "length_ft": 15.0,
+    "wire_count": 4,
+    "wire_part_numbers": [
+      "WIRE-12-BLK-001",
+      "WIRE-12-RED-001",
+      "WIRE-18-YEL-001",
+      "WIRE-22-BLU-001"
+    ],
+    "sleeve_part_numbers": [
+      "M23053/13-002-0"
+    ],
+    "packaging_warning": "",
+    "voltage_flag": "Voltage drop check recommended",
+    "wire_csv": "signal_name,current,awg,color,wire_pn,length,note\nCTRL_A,3.0,22 AWG,blue,WIRE-22-BLU-001,15.0,Voltage drop review recommended\nCTRL_B,8.0,18 AWG,yellow,WIRE-18-YEL-001,15.0,Voltage drop review recommended\nMOTOR_PWR,25.0,12 AWG,red,WIRE-12-RED-001,15.0,Voltage drop review recommended; Current is close to ampacity limit\nMOTOR_RTN,25.0,12 AWG,black,WIRE-12-BLK-001,15.0,Voltage drop review recommended; Current is close to ampacity limit\n",
+    "bom_csv": "FN,description,part_number,quantity\n1,Hook-up wire,WIRE-12-BLK-001,15.0\n2,Hook-up wire,WIRE-12-RED-001,15.0\n3,Hook-up wire,WIRE-18-YEL-001,15.0\n4,Hook-up wire,WIRE-22-BLU-001,15.0\n5,Shrink sleeve,M23053/13-002-0,16.0\n",
+    "packaging": {
+      "bundle_diameter_in": 0.20334841110763566,
+      "bundle_diameter_method": "Bundle diameter estimated using RMS wire diameter and bundle factor",
+      "recommended_sleeve_pn": "M23053/13-002-0",
+      "has_valid_sleeve": true,
+      "packaging_warning": "",
+      "sleeve_min_diameter_in": 0.125,
+      "sleeve_max_diameter_in": 0.25,
+      "sleeve_wall_thickness_in": 0.035,
+      "sleeve_length_ft": 16.0,
+      "sleeve_length_in": 191.4,
+      "sleeve_length_note": "Sleeve length includes 3% margin and 6 in tolerance, rounded up to nearest 0.5 ft",
+      "margin_percent": 3.0,
+      "tolerance_in": 6.0
+    }
+  },
+  {
+    "name": "no_fit_sleeve_case",
+    "description": "Large bundle should keep wire results and warn when no sleeve fits.",
+    "status": "PASS",
+    "conductor_count": 39,
+    "length_ft": 12.0,
+    "wire_count": 39,
+    "wire_part_numbers": [
+      "WIRE-2-GRN-001"
+    ],
+    "sleeve_part_numbers": [],
+    "packaging_warning": "No sleeve range found for bundle diameter 2.428 in. Wire design remains valid, but sleeve selection requires manual review.",
+    "voltage_flag": "Voltage drop check recommended",
+    "wire_csv": "signal_name,current,awg,color,wire_pn,length,note\nPWR_1,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_2,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_3,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_4,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_5,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_6,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_7,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_8,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_9,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_10,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_11,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_12,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_13,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_14,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_15,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_16,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_17,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_18,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_19,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_20,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_21,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_22,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_23,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_24,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_25,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_26,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_27,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_28,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_29,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_30,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_31,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_32,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_33,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_34,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_35,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_36,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_37,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_38,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\nPWR_39,115.0,2 AWG,green,WIRE-2-GRN-001,12.0,Voltage drop review recommended; Current is close to ampacity limit\n",
+    "bom_csv": "FN,description,part_number,quantity\n1,Hook-up wire,WIRE-2-GRN-001,468.0\n",
+    "packaging": {
+      "bundle_diameter_in": 2.4275900000000004,
+      "bundle_diameter_method": "Bundle diameter estimated using RMS wire diameter and bundle factor",
+      "recommended_sleeve_pn": "No matching sleeve",
+      "has_valid_sleeve": false,
+      "packaging_warning": "No sleeve range found for bundle diameter 2.428 in. Wire design remains valid, but sleeve selection requires manual review.",
+      "sleeve_min_diameter_in": null,
+      "sleeve_max_diameter_in": null,
+      "sleeve_wall_thickness_in": null,
+      "sleeve_length_ft": 13.0,
+      "sleeve_length_in": 154.32,
+      "sleeve_length_note": "Sleeve length includes 3% margin and 6 in tolerance, rounded up to nearest 0.5 ft",
+      "margin_percent": 3.0,
+      "tolerance_in": 6.0
+    }
+  }
+]
